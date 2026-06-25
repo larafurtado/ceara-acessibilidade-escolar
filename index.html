@@ -17,13 +17,38 @@
   *{ box-sizing:border-box; }
   body{ margin:0; }
   select::-ms-expand{ display:none; }
+
+  @media (max-width: 860px){
+    [data-r="header"]{ flex-direction:column !important; height:auto !important; padding:14px 16px !important; gap:12px !important; align-items:stretch !important; position:static !important; }
+    [data-r="nav"]{ width:100% !important; overflow-x:auto !important; gap:6px !important; padding-bottom:3px !important; }
+    [data-r="nav"] > div{ flex:0 0 auto !important; font-size:11px !important; padding:9px 12px !important; }
+    [data-r="main"]{ padding:24px 16px 56px !important; }
+    [data-r="h2"]{ font-size:30px !important; }
+    [data-r="filterbar"]{ flex-wrap:wrap !important; gap:14px !important; }
+    [data-r="cards4"]{ grid-template-columns:repeat(2,1fr) !important; gap:12px !important; }
+    [data-r="maprow"]{ flex-direction:column !important; gap:16px !important; }
+    [data-r="legend"]{ width:100% !important; }
+    [data-r="map"]{ height:auto !important; max-height:78vh !important; }
+    [data-r="muni3"]{ grid-template-columns:1fr !important; gap:18px !important; }
+    [data-r="munihdr"]{ flex-direction:column !important; gap:18px !important; }
+    [data-r="locator"]{ width:100% !important; max-width:300px !important; }
+    [data-r="sobre2"]{ grid-template-columns:1fr !important; gap:30px !important; }
+    [data-r="team3"]{ grid-template-columns:1fr 1fr !important; gap:24px !important; }
+    [data-r="infopop"]{ width:calc(100vw - 56px) !important; max-width:320px !important; }
+  }
+  @media (max-width: 480px){
+    [data-r="h2"]{ font-size:25px !important; }
+    [data-r="team3"]{ grid-template-columns:1fr !important; }
+    [data-r="rkname"]{ width:118px !important; }
+    [data-r="col-sec"]{ display:none !important; }
+  }
 </style>
 </helmet>
 
 <div style="min-height:100vh; background:#f4f1ec; font-family:'IBM Plex Sans',sans-serif; color:#1b242a;">
 
   <!-- ============ TOP BAR ============ -->
-  <header style="background:#1d2b33; padding:0 40px; display:flex; align-items:center; justify-content:space-between; gap:30px; height:78px; position:sticky; top:0; z-index:20;">
+  <header data-r="header" style="background:#1d2b33; padding:0 40px; display:flex; align-items:center; justify-content:space-between; gap:30px; height:78px; position:sticky; top:0; z-index:20;">
     <div style="display:flex; align-items:center; gap:14px; flex:none;">
       <div style="width:8px; height:34px; background:#c25c3c;"></div>
       <div>
@@ -31,7 +56,7 @@
         <div style="font-size:11.5px; color:#8197a0; font-weight:500; margin-top:2px;">Ceará · Análise PNATE / PNE</div>
       </div>
     </div>
-    <nav style="display:flex; gap:7px;">
+    <nav data-r="nav" style="display:flex; gap:7px;">
       <div onClick="{{ goEscolas }}" style="font-family:'Archivo',sans-serif; font-size:12.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; padding:10px 16px; border-radius:6px; cursor:pointer; background:{{ btn.escolas.bg }}; color:{{ btn.escolas.color }};">Diagnóstico escolar</div>
       <div onClick="{{ goEstadual }}" style="font-family:'Archivo',sans-serif; font-size:12.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; padding:10px 16px; border-radius:6px; cursor:pointer; background:{{ btn.estadual.bg }}; color:{{ btn.estadual.color }};">Acessibilidade estadual</div>
       <div onClick="{{ goMunicipio }}" style="font-family:'Archivo',sans-serif; font-size:12.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; padding:10px 16px; border-radius:6px; cursor:pointer; background:{{ btn.municipio.bg }}; color:{{ btn.municipio.color }};">Acessibilidade municipal</div>
@@ -39,20 +64,20 @@
     </nav>
   </header>
 
-  <main style="max-width:1340px; margin:0 auto; padding:44px 48px 64px;">
+  <main data-r="main" style="max-width:1340px; margin:0 auto; padding:44px 48px 64px;">
 
     <!-- =================== ESCOLAS =================== -->
     <sc-if value="{{ isEscolas }}" hint-placeholder-val="{{ true }}">
       <div style="font-family:'Archivo',sans-serif; font-size:12px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:#c25c3c; margin-bottom:8px;">Diagnóstico da rede escolar</div>
-      <h2 style="font-family:'Archivo',sans-serif; font-weight:800; font-size:44px; line-height:1; margin:0; color:#1b242a; letter-spacing:-.025em;">Rede de Educação Infantil</h2>
+      <h2 data-r="h2" style="font-family:'Archivo',sans-serif; font-weight:800; font-size:44px; line-height:1; margin:0; color:#1b242a; letter-spacing:-.025em;">Rede de Educação Infantil</h2>
       <div style="font-size:15px; color:#5a6066; margin-top:11px; font-weight:500;">{{ escolasSubtitle }}</div>
 
       <!-- filter bar -->
-      <div style="display:flex; gap:20px; align-items:flex-end; margin-top:24px; padding:18px 22px; background:#fff; border:1px solid #e2dccf; border-radius:6px;">
+      <div data-r="filterbar" style="display:flex; gap:20px; align-items:flex-end; margin-top:24px; padding:18px 22px; background:#fff; border:1px solid #e2dccf; border-radius:6px;">
         <div>
           <div style="font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#8a857c; margin-bottom:6px;">Etapa</div>
           <div style="position:relative;">
-            <select value="{{ fase }}" onChange="{{ onFase }}" style="appearance:none; -webkit-appearance:none; background:#f7f3ec; border:1px solid #d8d0c2; border-radius:4px; padding:10px 32px 10px 13px; font-size:14px; font-weight:600; color:#1b242a; font-family:inherit; cursor:pointer; min-width:160px;"><option value="Todas">Todas</option><option value="Daycare">Creche</option><option value="Pre-school">Pré-escola</option></select>
+            <select value="{{ fase }}" onChange="{{ onFase }}" style="appearance:none; -webkit-appearance:none; background:#f7f3ec; border:1px solid #d8d0c2; border-radius:4px; padding:10px 32px 10px 13px; font-size:14px; font-weight:600; color:#1b242a; font-family:inherit; cursor:pointer; min-width:160px;"><option value="Daycare">Creche</option><option value="Pre-school">Pré-escola</option></select>
             <span style="position:absolute; right:13px; top:50%; transform:translateY(-50%); color:#a89f90; font-size:10px; pointer-events:none;">▼</span>
           </div>
         </div>
@@ -60,7 +85,7 @@
       </div>
 
       <!-- stat cards (clickable metric selector) -->
-      <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:18px; margin-top:20px;">
+      <div data-r="cards4" style="display:grid; grid-template-columns:repeat(4,1fr); gap:18px; margin-top:20px;">
         <div onClick="{{ pickEscolas }}" style="background:#fff; border:{{ card.escolas.border }}; border-top:3px solid #c25c3c; padding:19px 22px; cursor:pointer;">
           <div style="display:flex; align-items:center; justify-content:space-between;"><div style="font-family:'Archivo',sans-serif; font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#8a857c;">Escolas</div><span style="font-size:9px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:#c25c3c; background:#f6e7e2; padding:2px 7px; border-radius:3px; visibility:{{ card.escolas.badge }};">no mapa</span></div>
           <div style="font-family:'Archivo',sans-serif; font-weight:800; font-size:33px; color:#1b242a; line-height:1; letter-spacing:-.02em; margin-top:10px;">{{ totEsc }}</div>
@@ -86,16 +111,16 @@
       <!-- choropleth -->
       <div style="font-family:'Archivo',sans-serif; font-weight:700; font-size:16px; color:#1b242a; margin:34px 0 4px; letter-spacing:-.01em;">{{ escVarLabel }} por município</div>
       <div style="font-size:12.5px; color:#9a958c; margin-bottom:16px;">Cor por município segundo o indicador selecionado · 184 municípios</div>
-      <div style="display:flex; gap:30px; align-items:stretch;">
+      <div data-r="maprow" style="display:flex; gap:30px; align-items:stretch;">
         <div style="flex:1; min-width:0; background:#efe9df; border:1px solid #e0d8ca; border-radius:6px; padding:14px 18px; position:relative;">
           <div style="position:absolute; top:18px; left:22px; z-index:2; background:rgba(29,43,51,{{ hoverChipBg }}); color:#f2f4f3; font-size:12.5px; font-weight:600; padding:7px 13px; border-radius:4px; max-width:72%;">{{ hoverText }}</div>
-          <svg viewBox="{{ viewBox }}" style="width:100%; height:600px; display:block;">
+          <svg viewBox="{{ viewBox }}" data-r="map" style="width:100%; height:600px; display:block;">
             <sc-for list="{{ escCells }}" as="cell" hint-placeholder-count="0">
               <path d="{{ cell.d }}" fill="{{ cell.fill }}" stroke="#d8ccb6" stroke-width="0.5" onMouseOver="{{ cell.onEnter }}" onMouseOut="{{ cell.onLeave }}" onMouseMove="{{ cell.onEnter }}" style="cursor:pointer;"></path>
             </sc-for>
           </svg>
         </div>
-        <div style="flex:none; width:150px; display:flex; flex-direction:column; justify-content:center;">
+        <div data-r="legend" style="flex:none; width:150px; display:flex; flex-direction:column; justify-content:center;">
           <div style="font-family:'Archivo',sans-serif; font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#5a6066; line-height:1.4; margin-bottom:14px;">{{ escVarLabel }}</div>
           <div style="display:flex; gap:11px; align-items:stretch;">
             <div style="width:18px; height:200px; border-radius:3px; background:linear-gradient(#7a2414,#cf7a4a,#f4ede1);"></div>
@@ -112,21 +137,21 @@
       <div style="font-size:12.5px; color:#9a958c; margin-bottom:14px;">Ordenado por {{ escVarLabel }} · {{ faseLabel }}</div>
       <div style="display:flex; align-items:center; gap:16px; padding:0 0 9px; border-bottom:2px solid #1d2b33; max-width:920px;">
         <div style="width:24px; flex:none;"></div>
-        <div style="width:200px; flex:none; font-family:'Archivo',sans-serif; font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#8a857c;">Município</div>
+        <div data-r="rkname" style="width:200px; flex:none; font-family:'Archivo',sans-serif; font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#8a857c;">Município</div>
         <div style="flex:1;"></div>
         <div style="width:92px; flex:none; text-align:right; font-family:'Archivo',sans-serif; font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#8a857c;">Matríc.</div>
-        <div style="width:78px; flex:none; text-align:right; font-family:'Archivo',sans-serif; font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#8a857c;">Docent.</div>
-        <div style="width:64px; flex:none; text-align:right; font-family:'Archivo',sans-serif; font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#8a857c;">Escolas</div>
+        <div data-r="col-sec" style="width:78px; flex:none; text-align:right; font-family:'Archivo',sans-serif; font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#8a857c;">Docent.</div>
+        <div data-r="col-sec" style="width:64px; flex:none; text-align:right; font-family:'Archivo',sans-serif; font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#8a857c;">Escolas</div>
       </div>
       <div style="display:flex; flex-direction:column; max-width:920px;">
         <sc-for list="{{ schoolRank }}" as="r" hint-placeholder-count="10">
           <div style="display:flex; align-items:center; gap:16px; padding:9px 0; border-bottom:1px solid #ebe5d8;">
             <div style="font-family:'Archivo',sans-serif; font-weight:700; font-size:13px; color:#b3aa9c; width:24px; flex:none; font-variant-numeric:tabular-nums;">{{ r.num }}</div>
-            <div style="width:200px; flex:none; font-size:14px; font-weight:600; color:#1b242a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ r.n }}</div>
+            <div data-r="rkname" style="width:200px; flex:none; font-size:14px; font-weight:600; color:#1b242a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ r.n }}</div>
             <div style="flex:1; height:16px; background:#ece6d9; border-radius:3px; overflow:hidden;"><div style="width:{{ r.barW }}; height:100%; background:#c25c3c;"></div></div>
             <div style="width:92px; flex:none; text-align:right; font-size:13.5px; font-weight:{{ r.matW }}; color:#1b242a; font-variant-numeric:tabular-nums;">{{ r.matTxt }}</div>
-            <div style="width:78px; flex:none; text-align:right; font-size:13.5px; font-weight:{{ r.docW }}; color:#5a6066; font-variant-numeric:tabular-nums;">{{ r.docTxt }}</div>
-            <div style="width:64px; flex:none; text-align:right; font-size:13.5px; font-weight:{{ r.escW }}; color:#5a6066; font-variant-numeric:tabular-nums;">{{ r.escTxt }}</div>
+            <div data-r="col-sec" style="width:78px; flex:none; text-align:right; font-size:13.5px; font-weight:{{ r.docW }}; color:#5a6066; font-variant-numeric:tabular-nums;">{{ r.docTxt }}</div>
+            <div data-r="col-sec" style="width:64px; flex:none; text-align:right; font-size:13.5px; font-weight:{{ r.escW }}; color:#5a6066; font-variant-numeric:tabular-nums;">{{ r.escTxt }}</div>
           </div>
         </sc-for>
       </div>
@@ -136,11 +161,11 @@
     <!-- =================== ESTADUAL =================== -->
     <sc-if value="{{ isEstadual }}" hint-placeholder-val="{{ true }}">
       <div style="font-family:'Archivo',sans-serif; font-size:12px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:#c25c3c; margin-bottom:8px;">Acessibilidade · visão estadual</div>
-      <h2 style="font-family:'Archivo',sans-serif; font-weight:800; font-size:44px; line-height:1; margin:0; color:#1b242a; letter-spacing:-.025em;">Ceará</h2>
+      <h2 data-r="h2" style="font-family:'Archivo',sans-serif; font-weight:800; font-size:44px; line-height:1; margin:0; color:#1b242a; letter-spacing:-.025em;">Ceará</h2>
       <div style="font-size:15px; color:#5a6066; margin-top:11px; font-weight:500;">184 municípios · {{ subtitle }}</div>
 
       <!-- filter bar -->
-      <div style="display:flex; gap:20px; align-items:flex-end; margin-top:24px; padding:18px 22px; background:#fff; border:1px solid #e2dccf; border-radius:6px;">
+      <div data-r="filterbar" style="display:flex; gap:20px; align-items:flex-end; margin-top:24px; padding:18px 22px; background:#fff; border:1px solid #e2dccf; border-radius:6px;">
         <div>
           <div style="font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#8a857c; margin-bottom:6px;">Etapa</div>
           <div style="position:relative;"><select value="{{ fase }}" onChange="{{ onFase }}" style="appearance:none; -webkit-appearance:none; background:#f7f3ec; border:1px solid #d8d0c2; border-radius:4px; padding:10px 32px 10px 13px; font-size:14px; font-weight:600; color:#1b242a; font-family:inherit; cursor:pointer; min-width:150px;"><option value="Daycare">Creche</option><option value="Pre-school">Pré-escola</option></select><span style="position:absolute; right:13px; top:50%; transform:translateY(-50%); color:#a89f90; font-size:10px; pointer-events:none;">▼</span></div>
@@ -150,7 +175,7 @@
             <span style="font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#8a857c;">Cenário</span>
             <span onClick="{{ toggleInfo }}" title="O que são os cenários?" style="width:15px; height:15px; border-radius:50%; background:#1d2b33; color:#f2f4f3; font-family:'Archivo',sans-serif; font-size:10px; font-weight:700; font-style:italic; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; user-select:none;">i</span>
             <sc-if value="{{ infoOpen }}" hint-placeholder-val="{{ false }}">
-              <div style="position:absolute; top:24px; left:0; z-index:30; width:312px; background:#fff; border:1px solid #d8d0c2; border-top:3px solid #c25c3c; border-radius:6px; box-shadow:0 18px 40px -22px rgba(40,30,20,.5); padding:18px 20px; text-transform:none; letter-spacing:0;">
+              <div data-r="infopop" style="position:absolute; top:24px; left:0; z-index:30; width:312px; background:#fff; border:1px solid #d8d0c2; border-top:3px solid #c25c3c; border-radius:6px; box-shadow:0 18px 40px -22px rgba(40,30,20,.5); padding:18px 20px; text-transform:none; letter-spacing:0;">
                 <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
                   <span style="font-family:'Archivo',sans-serif; font-weight:700; font-size:14px; color:#1b242a;">O que são os cenários?</span>
                   <span onClick="{{ toggleInfo }}" style="font-size:16px; color:#9a958c; cursor:pointer; line-height:1;">×</span>
@@ -191,16 +216,16 @@
             <span style="position:absolute; right:14px; top:50%; transform:translateY(-50%); color:#a89f90; font-size:10px; pointer-events:none;">▼</span>
           </div>
         </div>
-        <div style="display:flex; gap:30px; margin-top:22px; align-items:stretch;">
+        <div data-r="maprow" style="display:flex; gap:30px; margin-top:22px; align-items:stretch;">
           <div style="flex:1; min-width:0; background:#efe9df; border:1px solid #e0d8ca; border-radius:6px; padding:14px 18px; position:relative;">
             <div style="position:absolute; top:18px; left:22px; z-index:2; background:rgba(29,43,51,{{ hoverChipBg }}); color:#f2f4f3; font-size:12.5px; font-weight:600; padding:7px 13px; border-radius:4px; max-width:60%;">{{ hoverText }}</div>
-            <svg viewBox="{{ viewBox }}" style="width:100%; height:600px; display:block;">
+            <svg viewBox="{{ viewBox }}" data-r="map" style="width:100%; height:600px; display:block;">
               <sc-for list="{{ mapCells }}" as="cell" hint-placeholder-count="0">
                 <path d="{{ cell.d }}" fill="{{ cell.fill }}" stroke="#efe9df" stroke-width="0.6" onMouseOver="{{ cell.onEnter }}" onMouseOut="{{ cell.onLeave }}" onMouseMove="{{ cell.onEnter }}" style="cursor:pointer;"></path>
               </sc-for>
             </svg>
           </div>
-          <div style="flex:none; width:128px; display:flex; flex-direction:column; justify-content:center;">
+          <div data-r="legend" style="flex:none; width:128px; display:flex; flex-direction:column; justify-content:center;">
             <div style="font-family:'Archivo',sans-serif; font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#5a6066; line-height:1.4; margin-bottom:14px;">{{ mapVarLabel }}</div>
             <div style="display:flex; gap:11px; align-items:stretch;">
               <div style="width:18px; height:200px; border-radius:3px; background:{{ legendGrad }};"></div>
@@ -221,7 +246,7 @@
             <sc-for list="{{ rankRows }}" as="r" hint-placeholder-count="10">
               <div style="display:flex; align-items:center; gap:16px; padding:9px 0; border-bottom:1px solid #ebe5d8;">
                 <div style="font-family:'Archivo',sans-serif; font-weight:700; font-size:13px; color:#b3aa9c; width:24px; flex:none; font-variant-numeric:tabular-nums;">{{ r.num }}</div>
-                <div style="width:190px; flex:none; font-size:14px; font-weight:600; color:#1b242a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ r.n }}</div>
+                <div data-r="rkname" style="width:190px; flex:none; font-size:14px; font-weight:600; color:#1b242a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ r.n }}</div>
                 <div style="flex:1; height:18px; background:#ece6d9; border-radius:3px; overflow:hidden;"><div style="width:{{ r.barW }}; height:100%; background:{{ r.color }};"></div></div>
                 <div style="width:92px; flex:none; text-align:right; font-size:13.5px; font-weight:700; color:#1b242a; font-variant-numeric:tabular-nums;">{{ r.valTxt }}</div>
               </div>
@@ -257,14 +282,14 @@
 
     <!-- =================== MUNICÍPIO =================== -->
     <sc-if value="{{ isMunicipio }}" hint-placeholder-val="{{ true }}">
-      <div style="display:flex; gap:36px; align-items:flex-start; justify-content:space-between;">
+      <div data-r="munihdr" style="display:flex; gap:36px; align-items:flex-start; justify-content:space-between;">
         <div style="flex:1; min-width:0;">
           <div style="font-family:'Archivo',sans-serif; font-size:12px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:#c25c3c; margin-bottom:8px;">Acessibilidade · por município</div>
-          <h2 style="font-family:'Archivo',sans-serif; font-weight:800; font-size:44px; line-height:1; margin:0; color:#1b242a; letter-spacing:-.025em;">{{ municipio }}</h2>
+          <h2 data-r="h2" style="font-family:'Archivo',sans-serif; font-weight:800; font-size:44px; line-height:1; margin:0; color:#1b242a; letter-spacing:-.025em;">{{ municipio }}</h2>
           <div style="font-size:15px; color:#5a6066; margin-top:11px; font-weight:500;">{{ subtitle }}</div>
         </div>
         <!-- locator map -->
-        <div style="flex:none; width:230px; background:#fff; border:1px solid #e2dccf; border-radius:6px; padding:14px 14px 12px;">
+        <div data-r="locator" style="flex:none; width:230px; background:#fff; border:1px solid #e2dccf; border-radius:6px; padding:14px 14px 12px;">
           <div style="font-family:'Archivo',sans-serif; font-size:10.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#8a857c; margin-bottom:8px;">Localização no Ceará</div>
           <svg viewBox="{{ viewBox }}" style="width:100%; height:230px; display:block;">
             <sc-for list="{{ muniLoc }}" as="c" hint-placeholder-count="0">
@@ -276,7 +301,7 @@
       </div>
 
       <!-- filter bar -->
-      <div style="display:flex; gap:20px; align-items:flex-end; margin-top:24px; padding:18px 22px; background:#fff; border:1px solid #e2dccf; border-radius:6px; flex-wrap:wrap;">
+      <div data-r="filterbar" style="display:flex; gap:20px; align-items:flex-end; margin-top:24px; padding:18px 22px; background:#fff; border:1px solid #e2dccf; border-radius:6px; flex-wrap:wrap;">
         <div>
           <div style="font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#8a857c; margin-bottom:6px;">Etapa</div>
           <div style="position:relative;"><select value="{{ fase }}" onChange="{{ onFase }}" style="appearance:none; -webkit-appearance:none; background:#f7f3ec; border:1px solid #d8d0c2; border-radius:4px; padding:10px 32px 10px 13px; font-size:14px; font-weight:600; color:#1b242a; font-family:inherit; cursor:pointer; min-width:140px;"><option value="Daycare">Creche</option><option value="Pre-school">Pré-escola</option></select><span style="position:absolute; right:13px; top:50%; transform:translateY(-50%); color:#a89f90; font-size:10px; pointer-events:none;">▼</span></div>
@@ -286,7 +311,7 @@
             <span style="font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#8a857c;">Cenário</span>
             <span onClick="{{ toggleInfo }}" title="O que são os cenários?" style="width:15px; height:15px; border-radius:50%; background:#1d2b33; color:#f2f4f3; font-family:'Archivo',sans-serif; font-size:10px; font-weight:700; font-style:italic; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; user-select:none;">i</span>
             <sc-if value="{{ infoOpen }}" hint-placeholder-val="{{ false }}">
-              <div style="position:absolute; top:24px; left:0; z-index:30; width:312px; background:#fff; border:1px solid #d8d0c2; border-top:3px solid #c25c3c; border-radius:6px; box-shadow:0 18px 40px -22px rgba(40,30,20,.5); padding:18px 20px; text-transform:none; letter-spacing:0;">
+              <div data-r="infopop" style="position:absolute; top:24px; left:0; z-index:30; width:312px; background:#fff; border:1px solid #d8d0c2; border-top:3px solid #c25c3c; border-radius:6px; box-shadow:0 18px 40px -22px rgba(40,30,20,.5); padding:18px 20px; text-transform:none; letter-spacing:0;">
                 <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
                   <span style="font-family:'Archivo',sans-serif; font-weight:700; font-size:14px; color:#1b242a;">O que são os cenários?</span>
                   <span onClick="{{ toggleInfo }}" style="font-size:16px; color:#9a958c; cursor:pointer; line-height:1;">×</span>
@@ -312,7 +337,7 @@
         </div>
       </div>
 
-      <div style="display:grid; grid-template-columns:1fr 1fr 184px; gap:30px; align-items:stretch; margin-top:34px;">
+      <div data-r="muni3" style="display:grid; grid-template-columns:1fr 1fr 184px; gap:30px; align-items:stretch; margin-top:34px;">
         <div>
           <div style="border-top:3px solid #1d2b33; padding-top:14px; margin-bottom:20px;"><span style="font-family:'Archivo',sans-serif; font-size:13px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#1d2b33;">Modelo original</span><span style="font-size:13px; color:#9a958c; margin-left:7px;">distância</span></div>
           <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:22px;">
@@ -376,10 +401,10 @@
     <!-- =================== SOBRE =================== -->
     <sc-if value="{{ isSobre }}" hint-placeholder-val="{{ true }}">
       <div style="font-family:'Archivo',sans-serif; font-size:12px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:#c25c3c; margin-bottom:8px;">Sobre o projeto</div>
-      <h2 style="font-family:'Archivo',sans-serif; font-weight:800; font-size:44px; line-height:1; margin:0; color:#1b242a; letter-spacing:-.025em;">Metodologia, dados e equipe</h2>
+      <h2 data-r="h2" style="font-family:'Archivo',sans-serif; font-weight:800; font-size:44px; line-height:1; margin:0; color:#1b242a; letter-spacing:-.025em;">Metodologia, dados e equipe</h2>
       <div style="font-size:15.5px; color:#5a6066; margin-top:14px; line-height:1.6; max-width:760px;">Esta ferramenta diagnostica a acessibilidade à educação infantil nos 184 municípios do Ceará, comparando um modelo baseado em <strong style="color:#1b242a;">distância</strong> com um modelo calibrado por <strong style="color:#1b242a;">tempo de deslocamento</strong>, para apoiar decisões de oferta de vagas e transporte escolar.</div>
 
-      <div style="display:grid; grid-template-columns:1.55fr 1fr; gap:48px; margin-top:40px; align-items:start;">
+      <div data-r="sobre2" style="display:grid; grid-template-columns:1.55fr 1fr; gap:48px; margin-top:40px; align-items:start;">
         <div>
           <div style="font-family:'Archivo',sans-serif; font-weight:700; font-size:18px; color:#1b242a; margin-bottom:22px; letter-spacing:-.01em; padding-bottom:12px; border-bottom:2px solid #1d2b33;">Metodologia de cálculo</div>
           <div style="display:flex; flex-direction:column; gap:26px;">
@@ -409,7 +434,7 @@
 
       <div style="margin-top:46px;">
         <div style="font-family:'Archivo',sans-serif; font-weight:700; font-size:18px; color:#1b242a; margin-bottom:20px; letter-spacing:-.01em; padding-bottom:12px; border-bottom:2px solid #1d2b33;">Equipe</div>
-        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:30px 32px; max-width:900px;">
+        <div data-r="team3" style="display:grid; grid-template-columns:repeat(3,1fr); gap:30px 32px; max-width:900px;">
           <div style="display:flex; align-items:flex-start; gap:16px;"><img src="team/lara.png" alt="Lara Furtado" style="width:68px; height:68px; flex:none; border-radius:50%; object-fit:cover;"><div><div style="font-size:15.5px; font-weight:700; color:#1b242a;">Lara Furtado</div><div style="font-size:12.5px; color:#c25c3c; font-weight:600; margin-top:3px;">Professora</div><div style="font-size:12px; color:#7a7468; line-height:1.4; margin-top:3px;">Inst. de Arquitetura, Urbanismo e Design · UFC</div></div></div>
           <div style="display:flex; align-items:flex-start; gap:16px;"><img src="team/samuel.png" alt="Samuel Torquato" style="width:68px; height:68px; flex:none; border-radius:50%; object-fit:cover;"><div><div style="font-size:15.5px; font-weight:700; color:#1b242a;">Samuel Torquato</div><div style="font-size:12.5px; color:#c25c3c; font-weight:600; margin-top:3px;">Pesquisador colaborador</div><div style="font-size:12px; color:#7a7468; line-height:1.4; margin-top:3px;">Ciência da Computação · UFC</div></div></div>
           <div style="display:flex; align-items:flex-start; gap:16px;"><img src="team/jorge.png" alt="Jorge Soares" style="width:68px; height:68px; flex:none; border-radius:50%; object-fit:cover;"><div><div style="font-size:15.5px; font-weight:700; color:#1b242a;">Jorge Soares</div><div style="font-size:12.5px; color:#c25c3c; font-weight:600; margin-top:3px;">Professor</div><div style="font-size:12px; color:#7a7468; line-height:1.4; margin-top:3px;">Engenharia de Transportes · UFC</div></div></div>
@@ -427,7 +452,7 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1340,&quot;height&quot;:900}}">
 class Component extends DCLogic {
-  state = { page:'escolas', fase:'Todas', cenario:'C2', percentil:'p90', municipio:'Abaiara', tab:'mapa', mapVar:'delta_sem_acesso', escVar:'matriculas', infoOpen:false, geo:null, detalhe:null, hover:null };
+  state = { page:'escolas', fase:'Daycare', cenario:'C2', percentil:'p90', municipio:'Abaiara', tab:'mapa', mapVar:'delta_sem_acesso', escVar:'matriculas', infoOpen:false, geo:null, detalhe:null, hover:null };
 
   componentDidMount(){
     if(window.CEARA){ this.setState({geo:window.CEARA}); }
@@ -454,7 +479,7 @@ class Component extends DCLogic {
 
   renderVals(){
     const S=this.state, g=S.geo, F=this.fk(), cen=S.cenario;
-    const faseLabel = S.fase==='Daycare'?'Creche':(S.fase==='Pre-school'?'Pré-escola':'Todas as etapas');
+    const faseLabel = S.fase==='Daycare'?'Creche':'Pré-escola';
     const set=k=>e=>this.setState({[k]:e.target.value});
     const mkBtn=p=>({ bg:S.page===p?'#c25c3c':'transparent', color:S.page===p?'#ffffff':'#aeb9c0' });
     const v={
@@ -504,7 +529,7 @@ class Component extends DCLogic {
     v.deltaWord = dpp<-0.05?'Melhora':(dpp>0.05?'Piora':'Estável');
     const base={ 'Daycare':{urb:3.80,rur:16.37}, 'Pre-school':{urb:4.60,rur:19.20} };
     const pf={ p75:0.82, p90:1.0, p95:1.16 }[S.percentil];
-    const b=base[S.fase]||base['Daycare'];
+    const b=base[S.fase];
     v.thresholds=[ {fase:faseLabel, situacao:'Urbana', val:(b.urb*pf).toFixed(2)}, {fase:faseLabel, situacao:'Rural', val:(b.rur*pf).toFixed(2)} ];
 
     // locator map for município page
@@ -548,10 +573,6 @@ class Component extends DCLogic {
     // ---------- Escolas (rede escolar) ----------
     const schools = g.munis.map(x=>{
       // (A) campo esc real, se disponível: x.esc[D|P] = {escolas, matriculas, docentes}
-      if(S.fase==='Todas'){
-        const eD=x.esc&&x.esc['D'], eP=x.esc&&x.esc['P'];
-        if(eD&&eP){ return {n:x.n, d:x.d, matriculas:eD.matriculas+eP.matriculas, docentes:eD.docentes+eP.docentes, escolas:eD.escolas+eP.escolas}; }
-      }
       const e = x.esc && x.esc[F];
       if(e){ return {n:x.n, d:x.d, matriculas:e.matriculas, docentes:e.docentes, escolas:e.escolas}; }
       const bb=(F==='D'?x.pop.D:x.pop.P)||0;
