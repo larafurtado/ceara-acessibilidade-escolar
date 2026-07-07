@@ -77,7 +77,7 @@
         <div>
           <div style="font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#8a857c; margin-bottom:6px;">Etapa</div>
           <div style="position:relative;">
-            <select value="{{ fase }}" onChange="{{ onFase }}" style="appearance:none; -webkit-appearance:none; background:#f7f3ec; border:1px solid #d8d0c2; border-radius:4px; padding:10px 32px 10px 13px; font-size:14px; font-weight:600; color:#1b242a; font-family:inherit; cursor:pointer; min-width:160px;"><option value="Daycare">Creche</option><option value="Pre-school">Pré-escola</option></select>
+            <select value="{{ fase }}" onChange="{{ onFase }}" style="appearance:none; -webkit-appearance:none; background:#f7f3ec; border:1px solid #d8d0c2; border-radius:4px; padding:10px 32px 10px 13px; font-size:14px; font-weight:600; color:#1b242a; font-family:inherit; cursor:pointer; min-width:160px;"><option value="Total">Total</option><option value="Daycare">Creche</option><option value="Pre-school">Pré-escola</option></select>
             <span style="position:absolute; right:13px; top:50%; transform:translateY(-50%); color:#a89f90; font-size:10px; pointer-events:none;">▼</span>
           </div>
         </div>
@@ -471,7 +471,7 @@ class Component extends DCLogic {
   colDelta(v,mx){ const c={pos:'#b14a36', mid:'#efe7da', neg:'#2f6d6b'}, t=Math.max(-1,Math.min(1, v/(mx||0.4))); return t>=0 ? this.hexLerp(c.mid,c.pos,t) : this.hexLerp(c.mid,c.neg,-t); }
   colProp(v,mx){ const t=mx>0?Math.min(1,v/mx):0; return t<0.5 ? this.hexLerp('#f4ede1','#cf7a4a',t*2) : this.hexLerp('#cf7a4a','#7a2414',(t-0.5)*2); }
   hash(s){ let h=0; for(let i=0;i<s.length;i++){ h=(h*31+s.charCodeAt(i))>>>0; } return (h%1000)/1000; }
-  fk(){ return this.state.fase==='Daycare'?'D':'P'; }
+  fk(){ return this.state.fase==='Total'?'T':(this.state.fase==='Daycare'?'D':'P'); }
   split(sem,name,salt){ const h=this.hash(name+salt), rem=Math.max(0,1-sem), cam=rem*(0.42+0.20*h); return {cam, tr:rem-cam, sem}; }
   num(f){ return (f*100).toFixed(1); }
   lbl(f){ return Math.round(f*100)+'%'; }
@@ -479,7 +479,9 @@ class Component extends DCLogic {
 
   renderVals(){
     const S=this.state, g=S.geo, F=this.fk(), cen=S.cenario;
-    const faseLabel = S.fase==='Daycare'?'Creche':'Pré-escola';
+    const AF = F==='T'?'D':F; // Accessibility pages only support Creche/Pré; Total is only for Diagnóstico escolar.
+    const faseLabel = S.fase==='Total'?'Total':(S.fase==='Daycare'?'Creche':'Pré-escola');
+    const faseLabelA = AF==='D'?'Creche':'Pré-escola';
     const set=k=>e=>this.setState({[k]:e.target.value});
     const mkBtn=p=>({ bg:S.page===p?'#c25c3c':'transparent', color:S.page===p?'#ffffff':'#aeb9c0' });
     const v={
@@ -488,7 +490,7 @@ class Component extends DCLogic {
       isMapa:S.tab==='mapa', isRanking:S.tab==='ranking', isRobustez:S.tab==='robustez',
       municipios: g? g.munis.map(m=>m.n):[],
       onFase:set('fase'), onCenario:set('cenario'), onPercentil:set('percentil'), onMunicipio:set('municipio'), onMapVar:set('mapVar'),
-      goEscolas:()=>this.setState({page:'escolas'}), goEstadual:()=>this.setState({page:'estadual'}), goMunicipio:()=>this.setState({page:'municipio'}), goSobre:()=>this.setState({page:'sobre'}),
+      goEscolas:()=>this.setState({page:'escolas'}), goEstadual:()=>this.setState(st=>({page:'estadual', fase:st.fase==='Total'?'Daycare':st.fase})), goMunicipio:()=>this.setState(st=>({page:'municipio', fase:st.fase==='Total'?'Daycare':st.fase})), goSobre:()=>this.setState({page:'sobre'}),
       goMapa:()=>this.setState({tab:'mapa'}), goRanking:()=>this.setState({tab:'ranking'}), goRobustez:()=>this.setState({tab:'robustez'}),
       infoOpen:S.infoOpen, toggleInfo:()=>this.setState(s=>({infoOpen:!s.infoOpen})),
       pickEscolas:()=>this.setState({escVar:'escolas'}), pickMatriculas:()=>this.setState({escVar:'matriculas'}), pickDocentes:()=>this.setState({escVar:'docentes'}),
@@ -504,7 +506,7 @@ class Component extends DCLogic {
 
     // ---------- Município (Tela 1) ----------
     const m = g.munis.find(x=>x.n===S.municipio) || g.munis[0];
-    const semO = m.so[F][cen], semC = m.sc[F][cen], delta = m.dl[F], pop = m.pop[F];
+    const semO = m.so[AF][cen], semC = m.sc[AF][cen], delta = m.dl[AF], pop = m.pop[AF];
     let bo, bc;
     // (B) detalhe real, se disponível: municipios_detalhe.json[municipio][fase][cenario][percentil]
     const det = S.detalhe && S.detalhe[m.n] && S.detalhe[m.n][S.fase] && S.detalhe[m.n][S.fase][cen] && S.detalhe[m.n][S.fase][cen][S.percentil];
@@ -529,8 +531,9 @@ class Component extends DCLogic {
     v.deltaWord = dpp<-0.05?'Melhora':(dpp>0.05?'Piora':'Estável');
     const base={ 'Daycare':{urb:3.80,rur:16.37}, 'Pre-school':{urb:4.60,rur:19.20} };
     const pf={ p75:0.82, p90:1.0, p95:1.16 }[S.percentil];
-    const b=base[S.fase];
-    v.thresholds=[ {fase:faseLabel, situacao:'Urbana', val:(b.urb*pf).toFixed(2)}, {fase:faseLabel, situacao:'Rural', val:(b.rur*pf).toFixed(2)} ];
+    const faseA = AF==='D'?'Daycare':'Pre-school';
+    const b=base[faseA];
+    v.thresholds=[ {fase:faseLabelA, situacao:'Urbana', val:(b.urb*pf).toFixed(2)}, {fase:faseLabelA, situacao:'Rural', val:(b.rur*pf).toFixed(2)} ];
 
     // locator map for município page
     const loc=g.munis.map(x=>({ n:x.n, d:x.d, fill:x.n===S.municipio?'#c25c3c':'#e7dfd0', stroke:x.n===S.municipio?'#1d2b33':'#d6cab4', sw:x.n===S.municipio?'1.6':'0.5', onClick:()=>this.setState({municipio:x.n}) }));
@@ -538,10 +541,10 @@ class Component extends DCLogic {
     v.muniLoc=loc;
 
     // ---------- Map / Ranking (estadual) ----------
-    const valOf = x => S.mapVar==='delta_sem_acesso' ? x.dl[F] : (S.mapVar==='prop_sem_acesso_original'? x.so[F][cen] : x.sc[F][cen]);
+    const valOf = x => S.mapVar==='delta_sem_acesso' ? x.dl[AF] : (S.mapVar==='prop_sem_acesso_original'? x.so[AF][cen] : x.sc[AF][cen]);
     const isDelta = S.mapVar==='delta_sem_acesso';
     const maxProp = Math.max(...g.munis.map(valOf).map(Math.abs));
-    const dmax = Math.max(0.05, Math.ceil(Math.max(...g.munis.map(x=>Math.abs(x.dl[F])))*20)/20);
+    const dmax = Math.max(0.05, Math.ceil(Math.max(...g.munis.map(x=>Math.abs(x.dl[AF])))*20)/20);
     const pmax = Math.max(0.05, Math.ceil(maxProp*20)/20);
     v.mapVarLabel = isDelta ? 'Δ Sem acesso (tempo − distância)' : (S.mapVar==='prop_sem_acesso_original' ? 'Sem acesso · modelo original' : 'Sem acesso · modelo calibrado');
     v.mapCells = g.munis.map(x=>{
@@ -566,16 +569,34 @@ class Component extends DCLogic {
     // ---------- Robustez ----------
     const cens=['C1','C2','C3'];
     const mean=a=>a.reduce((s,x)=>s+x,0)/a.length;
-    const rb = cens.map(c=>({cen:c, orig:mean(g.munis.map(x=>x.so[F][c])), cal:mean(g.munis.map(x=>x.sc[F][c]))}));
+    const rb = cens.map(c=>({cen:c, orig:mean(g.munis.map(x=>x.so[AF][c])), cal:mean(g.munis.map(x=>x.sc[AF][c]))}));
     const rbMax = Math.max(...rb.flatMap(r=>[r.orig,r.cal]));
     v.robustBars = rb.map(r=>({ cen:r.cen, origH:Math.max(3,Math.round(r.orig/rbMax*180)), calH:Math.max(3,Math.round(r.cal/rbMax*180)), origTxt:(r.orig*100).toFixed(1)+'%', calTxt:(r.cal*100).toFixed(1)+'%', labelColor: r.cen===cen ? '#c25c3c' : '#9a958c' }));
 
     // ---------- Escolas (rede escolar) ----------
     const schools = g.munis.map(x=>{
-      // (A) campo esc real, se disponível: x.esc[D|P] = {escolas, matriculas, docentes}
-      const e = x.esc && x.esc[F];
-      if(e){ return {n:x.n, d:x.d, matriculas:e.matriculas, docentes:e.docentes, escolas:e.escolas}; }
-      const bb=(F==='D'?x.pop.D:x.pop.P)||0;
+      // (A) campo esc real, se disponível:
+      // x.esc.D = Creche, x.esc.P = Pré-escola, x.esc.T = Total da Educação Infantil.
+      // Para "Total", usa x.esc.T se existir. Se não existir, soma matrículas/docentes de D+P
+      // e usa soma de escolas como fallback aproximado (o total exato de escolas exige contagem única).
+      if(x.esc){
+        if(F==='T'){
+          const et=x.esc.T, ed=x.esc.D, ep=x.esc.P;
+          if(et){ return {n:x.n, d:x.d, matriculas:et.matriculas, docentes:et.docentes, escolas:et.escolas}; }
+          if(ed || ep){
+            return {
+              n:x.n, d:x.d,
+              matriculas:(ed?.matriculas||0)+(ep?.matriculas||0),
+              docentes:(ed?.docentes||0)+(ep?.docentes||0),
+              escolas:(ed?.escolas||0)+(ep?.escolas||0)
+            };
+          }
+        } else {
+          const e = x.esc[F];
+          if(e){ return {n:x.n, d:x.d, matriculas:e.matriculas, docentes:e.docentes, escolas:e.escolas}; }
+        }
+      }
+      const bb=(F==='T'?((x.pop.D||0)+(x.pop.P||0)):(F==='D'?x.pop.D:x.pop.P))||0;
       const h=this.hash(x.n+'s'), h2=this.hash(x.n+'d'), h3=this.hash(x.n+'e');
       const matriculas=Math.max(12, Math.round(bb*(0.62+0.32*h)));
       const docentes=Math.max(1, Math.round(matriculas/(13+8*h2)));
