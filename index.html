@@ -12,6 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="ceara_data.js"></script>
+<script src="sim_index.js"></script>
 <script src="image-slot.js"></script>
 <style>
   *{ box-sizing:border-box; }
@@ -60,6 +61,7 @@
       <div onClick="{{ goEscolas }}" style="font-family:'Archivo',sans-serif; font-size:12.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; padding:10px 16px; border-radius:6px; cursor:pointer; background:{{ btn.escolas.bg }}; color:{{ btn.escolas.color }};">Diagnóstico escolar</div>
       <div onClick="{{ goEstadual }}" style="font-family:'Archivo',sans-serif; font-size:12.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; padding:10px 16px; border-radius:6px; cursor:pointer; background:{{ btn.estadual.bg }}; color:{{ btn.estadual.color }};">Acessibilidade estadual</div>
       <div onClick="{{ goMunicipio }}" style="font-family:'Archivo',sans-serif; font-size:12.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; padding:10px 16px; border-radius:6px; cursor:pointer; background:{{ btn.municipio.bg }}; color:{{ btn.municipio.color }};">Acessibilidade municipal</div>
+      <div onClick="{{ goSimulador }}" style="font-family:'Archivo',sans-serif; font-size:12.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; padding:10px 16px; border-radius:6px; cursor:pointer; background:{{ btn.simulador.bg }}; color:{{ btn.simulador.color }};">Simulador</div>
       <div onClick="{{ goSobre }}" style="font-family:'Archivo',sans-serif; font-size:12.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; padding:10px 16px; border-radius:6px; cursor:pointer; background:{{ btn.sobre.bg }}; color:{{ btn.sobre.color }};">Sobre</div>
     </nav>
   </header>
@@ -77,7 +79,7 @@
         <div>
           <div style="font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#8a857c; margin-bottom:6px;">Etapa</div>
           <div style="position:relative;">
-            <select value="{{ fase }}" onChange="{{ onFase }}" style="appearance:none; -webkit-appearance:none; background:#f7f3ec; border:1px solid #d8d0c2; border-radius:4px; padding:10px 32px 10px 13px; font-size:14px; font-weight:600; color:#1b242a; font-family:inherit; cursor:pointer; min-width:160px;"><option value="Daycare">Creche</option><option value="Pre-school">Pré-escola</option></select>
+            <select value="{{ fase }}" onChange="{{ onFase }}" style="appearance:none; -webkit-appearance:none; background:#f7f3ec; border:1px solid #d8d0c2; border-radius:4px; padding:10px 32px 10px 13px; font-size:14px; font-weight:600; color:#1b242a; font-family:inherit; cursor:pointer; min-width:160px;"><option value="Total">Total</option><option value="Daycare">Creche</option><option value="Pre-school">Pré-escola</option></select>
             <span style="position:absolute; right:13px; top:50%; transform:translateY(-50%); color:#a89f90; font-size:10px; pointer-events:none;">▼</span>
           </div>
         </div>
@@ -192,7 +194,16 @@
           <div style="position:relative;"><select value="{{ cenario }}" onChange="{{ onCenario }}" style="appearance:none; -webkit-appearance:none; background:#f7f3ec; border:1px solid #d8d0c2; border-radius:4px; padding:10px 32px 10px 13px; font-size:14px; font-weight:600; color:#1b242a; font-family:inherit; cursor:pointer; min-width:110px;"><option value="C1">C1</option><option value="C2">C2</option><option value="C3">C3</option></select><span style="position:absolute; right:13px; top:50%; transform:translateY(-50%); color:#a89f90; font-size:10px; pointer-events:none;">▼</span></div>
         </div>
         <div>
-          <div style="font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#8a857c; margin-bottom:6px;">Percentil</div>
+          <div style="display:flex; align-items:center; gap:6px; margin-bottom:6px; position:relative;">
+            <span style="font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#8a857c;">Percentil</span>
+            <span onClick="{{ togglePercentilInfo }}" title="O que significa percentil?" style="width:15px; height:15px; border-radius:50%; background:#1d2b33; color:#f2f4f3; font-family:'Archivo',sans-serif; font-size:10px; font-weight:700; font-style:italic; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; user-select:none;">i</span>
+            <sc-if value="{{ percentilInfoOpen }}" hint-placeholder-val="{{ false }}">
+              <div data-r="infopop" style="position:absolute; top:24px; left:0; z-index:30; width:328px; background:#fff; border:1px solid #d8d0c2; border-top:3px solid #c25c3c; border-radius:6px; box-shadow:0 18px 40px -22px rgba(40,30,20,.5); padding:18px 20px; text-transform:none; letter-spacing:0;">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;"><span style="font-family:'Archivo',sans-serif; font-weight:700; font-size:14px; color:#1b242a;">O que é o percentil?</span><span onClick="{{ togglePercentilInfo }}" style="font-size:16px; color:#9a958c; cursor:pointer; line-height:1;">×</span></div>
+                <div style="font-size:12.5px; color:#5a6066; line-height:1.55;">O percentil define o threshold de tempo usado no critério por minutos. <strong style="color:#1b242a;">p75</strong> é mais restritivo, <strong style="color:#1b242a;">p90</strong> é a referência principal e <strong style="color:#1b242a;">p95</strong> é mais permissivo. Em termos simples, p90 representa o tempo abaixo do qual 90% dos deslocamentos observados ficam.</div>
+              </div>
+            </sc-if>
+          </div>
           <div style="position:relative;"><select value="{{ percentil }}" onChange="{{ onPercentil }}" style="appearance:none; -webkit-appearance:none; background:#f7f3ec; border:1px solid #d8d0c2; border-radius:4px; padding:10px 32px 10px 13px; font-size:14px; font-weight:600; color:#1b242a; font-family:inherit; cursor:pointer; min-width:110px;"><option value="p75">p75</option><option value="p90">p90</option><option value="p95">p95</option></select><span style="position:absolute; right:13px; top:50%; transform:translateY(-50%); color:#a89f90; font-size:10px; pointer-events:none;">▼</span></div>
         </div>
       </div>
@@ -210,8 +221,8 @@
           <div style="position:relative;">
             <select value="{{ mapVar }}" onChange="{{ onMapVar }}" style="appearance:none; -webkit-appearance:none; width:100%; background:#fff; border:1px solid #d8d0c2; border-radius:4px; padding:12px 32px 12px 14px; font-size:14px; font-weight:600; color:#1b242a; font-family:inherit; cursor:pointer;">
               <option value="delta_sem_acesso">Δ Sem acesso (tempo − distância)</option>
-              <option value="prop_sem_acesso_original">Sem acesso — modelo original</option>
-              <option value="prop_sem_acesso_calibrado">Sem acesso — modelo calibrado</option>
+              <option value="prop_sem_acesso_original">Sem acesso — modelo de distância</option>
+              <option value="prop_sem_acesso_calibrado">Sem acesso — modelo de tempo</option>
             </select>
             <span style="position:absolute; right:14px; top:50%; transform:translateY(-50%); color:#a89f90; font-size:10px; pointer-events:none;">▼</span>
           </div>
@@ -258,7 +269,7 @@
       <sc-if value="{{ isRobustez }}" hint-placeholder-val="{{ true }}">
         <div style="margin-top:26px;">
           <div style="font-family:'Archivo',sans-serif; font-weight:700; font-size:16px; color:#1b242a; margin-bottom:6px; letter-spacing:-.01em;">Sensibilidade ao cenário</div>
-          <div style="font-size:12.5px; color:#9a958c; margin-bottom:26px; max-width:640px; line-height:1.5;">Média estadual de crianças <strong style="color:#5a6066;">sem acesso</strong> em cada cenário (C1 → C3), comparando o modelo original e o calibrado. O modelo calibrado é, por construção, invariante ao cenário — daí a estabilidade das barras. O percentil não altera estes valores.</div>
+          <div style="font-size:12.5px; color:#9a958c; margin-bottom:26px; max-width:640px; line-height:1.5;">Média estadual de crianças <strong style="color:#5a6066;">sem acesso</strong> em cada cenário (C1 → C3), comparando o critério de distância e o critério de tempo. A classificação por tempo usa thresholds empíricos de deslocamento; por isso, a leitura muda quando o percentil de referência muda.</div>
           <div style="display:flex; gap:46px; align-items:flex-end; height:230px; padding:0 8px 0 4px; border-bottom:2px solid #1d2b33; max-width:620px;">
             <sc-for list="{{ robustBars }}" as="rb" hint-placeholder-count="3">
               <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%;">
@@ -273,8 +284,8 @@
             <sc-for list="{{ robustBars }}" as="rb" hint-placeholder-count="3"><div style="flex:1; text-align:center; font-family:'Archivo',sans-serif; font-weight:700; font-size:13px; letter-spacing:.04em; color:{{ rb.labelColor }};">{{ rb.cen }}</div></sc-for>
           </div>
           <div style="display:flex; gap:24px; margin-top:24px;">
-            <div style="display:flex; align-items:center; gap:9px;"><span style="width:13px; height:13px; background:#6e7269;"></span><span style="font-size:13px; color:#5a6066;">Modelo original (distância)</span></div>
-            <div style="display:flex; align-items:center; gap:9px;"><span style="width:13px; height:13px; background:#c25c3c;"></span><span style="font-size:13px; color:#5a6066;">Modelo calibrado (tempo)</span></div>
+            <div style="display:flex; align-items:center; gap:9px;"><span style="width:13px; height:13px; background:#6e7269;"></span><span style="font-size:13px; color:#5a6066;">Modelo de distância</span></div>
+            <div style="display:flex; align-items:center; gap:9px;"><span style="width:13px; height:13px; background:#c25c3c;"></span><span style="font-size:13px; color:#5a6066;">Modelo de tempo</span></div>
           </div>
         </div>
       </sc-if>
@@ -328,7 +339,16 @@
           <div style="position:relative;"><select value="{{ cenario }}" onChange="{{ onCenario }}" style="appearance:none; -webkit-appearance:none; background:#f7f3ec; border:1px solid #d8d0c2; border-radius:4px; padding:10px 32px 10px 13px; font-size:14px; font-weight:600; color:#1b242a; font-family:inherit; cursor:pointer; min-width:100px;"><option value="C1">C1</option><option value="C2">C2</option><option value="C3">C3</option></select><span style="position:absolute; right:13px; top:50%; transform:translateY(-50%); color:#a89f90; font-size:10px; pointer-events:none;">▼</span></div>
         </div>
         <div>
-          <div style="font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#8a857c; margin-bottom:6px;">Percentil</div>
+          <div style="display:flex; align-items:center; gap:6px; margin-bottom:6px; position:relative;">
+            <span style="font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#8a857c;">Percentil</span>
+            <span onClick="{{ togglePercentilInfo }}" title="O que significa percentil?" style="width:15px; height:15px; border-radius:50%; background:#1d2b33; color:#f2f4f3; font-family:'Archivo',sans-serif; font-size:10px; font-weight:700; font-style:italic; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; user-select:none;">i</span>
+            <sc-if value="{{ percentilInfoOpen }}" hint-placeholder-val="{{ false }}">
+              <div data-r="infopop" style="position:absolute; top:24px; left:0; z-index:30; width:328px; background:#fff; border:1px solid #d8d0c2; border-top:3px solid #c25c3c; border-radius:6px; box-shadow:0 18px 40px -22px rgba(40,30,20,.5); padding:18px 20px; text-transform:none; letter-spacing:0;">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;"><span style="font-family:'Archivo',sans-serif; font-weight:700; font-size:14px; color:#1b242a;">O que é o percentil?</span><span onClick="{{ togglePercentilInfo }}" style="font-size:16px; color:#9a958c; cursor:pointer; line-height:1;">×</span></div>
+                <div style="font-size:12.5px; color:#5a6066; line-height:1.55;">O percentil define o threshold de tempo usado no critério por minutos. <strong style="color:#1b242a;">p75</strong> é mais restritivo, <strong style="color:#1b242a;">p90</strong> é a referência principal e <strong style="color:#1b242a;">p95</strong> é mais permissivo. Em termos simples, p90 representa o tempo abaixo do qual 90% dos deslocamentos observados ficam.</div>
+              </div>
+            </sc-if>
+          </div>
           <div style="position:relative;"><select value="{{ percentil }}" onChange="{{ onPercentil }}" style="appearance:none; -webkit-appearance:none; background:#f7f3ec; border:1px solid #d8d0c2; border-radius:4px; padding:10px 32px 10px 13px; font-size:14px; font-weight:600; color:#1b242a; font-family:inherit; cursor:pointer; min-width:100px;"><option value="p75">p75</option><option value="p90">p90</option><option value="p95">p95</option></select><span style="position:absolute; right:13px; top:50%; transform:translateY(-50%); color:#a89f90; font-size:10px; pointer-events:none;">▼</span></div>
         </div>
         <div>
@@ -339,7 +359,7 @@
 
       <div data-r="muni3" style="display:grid; grid-template-columns:1fr 1fr 184px; gap:30px; align-items:stretch; margin-top:34px;">
         <div>
-          <div style="border-top:3px solid #1d2b33; padding-top:14px; margin-bottom:20px;"><span style="font-family:'Archivo',sans-serif; font-size:13px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#1d2b33;">Modelo original</span><span style="font-size:13px; color:#9a958c; margin-left:7px;">distância</span></div>
+          <div style="border-top:3px solid #1d2b33; padding-top:14px; margin-bottom:20px;"><span style="font-family:'Archivo',sans-serif; font-size:13px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#1d2b33;">Modelo de distância</span><span style="font-size:13px; color:#9a958c; margin-left:7px;">critério por km</span></div>
           <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:22px;">
             <div><div style="font-size:12px; color:#6e7269; margin-bottom:5px; font-weight:600;">Caminhável</div><div style="font-family:'Archivo',sans-serif; font-weight:800; font-size:31px; color:#3f6b4e; line-height:1; letter-spacing:-.03em;">{{ oCamNum }}<span style="font-size:17px;">%</span></div></div>
             <div><div style="font-size:12px; color:#6e7269; margin-bottom:5px; font-weight:600;">Só transporte</div><div style="font-family:'Archivo',sans-serif; font-weight:800; font-size:31px; color:#b07f24; line-height:1; letter-spacing:-.03em;">{{ oTransNum }}<span style="font-size:17px;">%</span></div></div>
@@ -353,7 +373,7 @@
           <div style="font-size:12.5px; color:#9a958c; margin-top:13px; font-weight:500;">Pop. alvo: {{ popTxt }} crianças</div>
         </div>
         <div>
-          <div style="border-top:3px solid #c25c3c; padding-top:14px; margin-bottom:20px;"><span style="font-family:'Archivo',sans-serif; font-size:13px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#1d2b33;">Modelo calibrado</span><span style="font-size:13px; color:#9a958c; margin-left:7px;">tempo, {{ percentil }}</span></div>
+          <div style="border-top:3px solid #c25c3c; padding-top:14px; margin-bottom:20px;"><span style="font-family:'Archivo',sans-serif; font-size:13px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#1d2b33;">Modelo de tempo</span><span style="font-size:13px; color:#9a958c; margin-left:7px;">critério por minutos, {{ percentil }}</span></div>
           <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:22px;">
             <div><div style="font-size:12px; color:#6e7269; margin-bottom:5px; font-weight:600;">Caminhável</div><div style="font-family:'Archivo',sans-serif; font-weight:800; font-size:31px; color:#3f6b4e; line-height:1; letter-spacing:-.03em;">{{ cCamNum }}<span style="font-size:17px;">%</span></div></div>
             <div><div style="font-size:12px; color:#6e7269; margin-bottom:5px; font-weight:600;">Só transporte</div><div style="font-family:'Archivo',sans-serif; font-weight:800; font-size:31px; color:#b07f24; line-height:1; letter-spacing:-.03em;">{{ cTransNum }}<span style="font-size:17px;">%</span></div></div>
@@ -369,7 +389,7 @@
         <div style="display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; background:#fff; border:2px solid #1d2b33; padding:24px 16px;">
           <div style="font-family:'Archivo',sans-serif; font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:#5a6066; margin-bottom:10px;">Δ Sem acesso</div>
           <div style="font-family:'Archivo',sans-serif; font-weight:800; font-size:40px; color:{{ deltaColor }}; line-height:1; letter-spacing:-.03em;">{{ deltaTxt }}<span style="font-size:23px;">%</span></div>
-          <div style="font-size:11.5px; color:#6e7269; margin-top:11px; line-height:1.4; font-weight:500;">p.p. (tempo − dist.)</div>
+          <div style="font-size:11.5px; color:#6e7269; margin-top:11px; line-height:1.4; font-weight:500;">p.p. (tempo − distância)</div>
           <div style="font-family:'Archivo',sans-serif; font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:{{ deltaColor }}; margin-top:8px; background:{{ deltaBg }}; padding:3px 10px;">{{ deltaWord }}</div>
         </div>
       </div>
@@ -398,20 +418,196 @@
       </div>
     </sc-if>
 
+    <!-- =================== SIMULADOR =================== -->
+    <sc-if value="{{ isSimulador }}" hint-placeholder-val="{{ true }}">
+      <div style="font-family:'Archivo',sans-serif; font-size:12px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:#c25c3c; margin-bottom:8px;">Planejamento · novas escolas</div>
+      <h2 data-r="h2" style="font-family:'Archivo',sans-serif; font-weight:800; font-size:44px; line-height:1; margin:0; color:#1b242a; letter-spacing:-.025em;">Simulador de novas escolas</h2>
+      <div style="font-size:15px; color:#5a6066; margin-top:11px; font-weight:500;">Simule a abertura de oferta de creche ou pré-escola em um ponto do território e veja o efeito sobre distância, tempo e acesso das crianças do entorno — usando as rotas reais (OSM) já calculadas.</div>
+
+      <!-- filter bar -->
+      <div data-r="filterbar" style="display:flex; gap:20px; align-items:flex-end; margin-top:24px; padding:18px 22px; background:#fff; border:1px solid #e2dccf; border-radius:6px; flex-wrap:wrap;">
+        <div>
+          <div style="font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#8a857c; margin-bottom:6px;">Etapa</div>
+          <div style="position:relative;"><select value="{{ fase }}" onChange="{{ onFase }}" style="appearance:none; -webkit-appearance:none; background:#f7f3ec; border:1px solid #d8d0c2; border-radius:4px; padding:10px 32px 10px 13px; font-size:14px; font-weight:600; color:#1b242a; font-family:inherit; cursor:pointer; min-width:140px;"><option value="Daycare">Creche</option><option value="Pre-school">Pré-escola</option></select><span style="position:absolute; right:13px; top:50%; transform:translateY(-50%); color:#a89f90; font-size:10px; pointer-events:none;">▼</span></div>
+        </div>
+        <div>
+          <div style="font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#8a857c; margin-bottom:6px;">Cenário</div>
+          <div style="position:relative;"><select value="{{ cenario }}" onChange="{{ onCenario }}" style="appearance:none; -webkit-appearance:none; background:#f7f3ec; border:1px solid #d8d0c2; border-radius:4px; padding:10px 32px 10px 13px; font-size:14px; font-weight:600; color:#1b242a; font-family:inherit; cursor:pointer; min-width:100px;"><option value="C1">C1</option><option value="C2">C2</option><option value="C3">C3</option></select><span style="position:absolute; right:13px; top:50%; transform:translateY(-50%); color:#a89f90; font-size:10px; pointer-events:none;">▼</span></div>
+        </div>
+        <div>
+          <div style="font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#8a857c; margin-bottom:6px;">Percentil</div>
+          <div style="position:relative;"><select value="{{ percentil }}" onChange="{{ onPercentil }}" style="appearance:none; -webkit-appearance:none; background:#f7f3ec; border:1px solid #d8d0c2; border-radius:4px; padding:10px 32px 10px 13px; font-size:14px; font-weight:600; color:#1b242a; font-family:inherit; cursor:pointer; min-width:100px;"><option value="p75">p75</option><option value="p90">p90</option><option value="p95">p95</option></select><span style="position:absolute; right:13px; top:50%; transform:translateY(-50%); color:#a89f90; font-size:10px; pointer-events:none;">▼</span></div>
+        </div>
+        <div>
+          <div style="font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#8a857c; margin-bottom:6px;">Município</div>
+          <div style="position:relative;"><select value="{{ municipio }}" onChange="{{ onSimMunicipio }}" style="appearance:none; -webkit-appearance:none; background:#f7f3ec; border:1px solid #d8d0c2; border-radius:4px; padding:10px 32px 10px 13px; font-size:14px; font-weight:600; color:#1b242a; font-family:inherit; cursor:pointer; min-width:190px;"><sc-for list="{{ simMunicipios }}" as="mn" hint-placeholder-count="3"><option value="{{ mn }}">{{ mn }}</option></sc-for></select><span style="position:absolute; right:13px; top:50%; transform:translateY(-50%); color:#a89f90; font-size:10px; pointer-events:none;">▼</span></div>
+        </div>
+        <div style="font-size:12px; color:#9a958c; padding-bottom:11px; line-height:1.45; max-width:330px;">{{ simThrTxt }}</div>
+      </div>
+
+      <!-- tabs -->
+      <div style="display:flex; gap:34px; margin-top:28px; border-bottom:2px solid #ddd6ca;">
+        <div onClick="{{ goSimTabSim }}" style="font-family:'Archivo',sans-serif; padding:0 1px 12px; font-size:14px; font-weight:700; letter-spacing:.03em; text-transform:uppercase; color:{{ tabSimColor }}; border-bottom:{{ tabSimBorder }}; margin-bottom:-2px; cursor:pointer;">Simular nova escola</div>
+        <div onClick="{{ goSimTabOnde }}" style="font-family:'Archivo',sans-serif; padding:0 1px 12px; font-size:14px; font-weight:700; letter-spacing:.03em; text-transform:uppercase; color:{{ tabOndeColor }}; border-bottom:{{ tabOndeBorder }}; margin-bottom:-2px; cursor:pointer;">Onde falta escola?</div>
+      </div>
+
+      <sc-if value="{{ simLoading }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-top:40px; font-size:14px; color:#8a857c;">Carregando dados do município…</div>
+      </sc-if>
+
+      <sc-if value="{{ simReady }}" hint-placeholder-val="{{ true }}">
+
+        <sc-if value="{{ isSimTabOnde }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex; gap:26px; align-items:center; flex-wrap:wrap; margin-top:22px; padding:16px 22px; background:#fff; border:1px solid #e2dccf; border-radius:6px;">
+            <div style="font-size:12.5px; font-weight:700; color:#1b242a; white-space:nowrap;">Se eu quero que o tempo até a escola seja no máximo</div>
+            <input type="range" min="1" max="30" step="0.5" value="{{ simX }}" onInput="{{ onSimX }}" style="flex:1; min-width:160px; accent-color:#c25c3c;">
+            <div style="font-family:'Archivo',sans-serif; font-weight:800; font-size:26px; color:#c25c3c; min-width:96px; text-align:right;">{{ simXTxt }} min</div>
+          </div>
+          <div style="font-size:13.5px; color:#5a6066; margin-top:12px;">{{ simDescTxt }}</div>
+        </sc-if>
+
+        <div data-r="maprow" style="display:flex; gap:30px; align-items:stretch; margin-top:22px;">
+          <div style="flex:1; min-width:0; background:#efe9df; border:1px solid #e0d8ca; border-radius:6px; padding:14px 18px; position:relative;">
+            <div style="position:absolute; top:18px; left:22px; z-index:2; background:rgba(29,43,51,{{ simHoverBg }}); color:#f2f4f3; font-size:12.5px; font-weight:600; padding:7px 13px; border-radius:4px; max-width:72%; pointer-events:none;">{{ simHoverText }}</div>
+            <svg viewBox="{{ simViewBox }}" data-r="map" onClick="{{ simMapClick }}" onMouseMove="{{ simMapMove }}" onMouseOut="{{ simMapLeave }}" style="width:100%; height:620px; display:block; cursor:crosshair;">
+              <sc-for list="{{ simBase }}" as="b" hint-placeholder-count="0">
+                <path d="{{ b.d }}" fill="{{ b.fill }}" stroke="#d8ccb6" stroke-width="{{ b.sw }}"></path>
+              </sc-for>
+              <path d="{{ simDots0 }}" fill="{{ simFill0 }}"></path>
+              <path d="{{ simDots1 }}" fill="{{ simFill1 }}"></path>
+              <path d="{{ simDots2 }}" fill="{{ simFill2 }}"></path>
+              <path d="{{ simDots3 }}" fill="{{ simFill3 }}"></path>
+              <path d="{{ simEscCand }}" fill="#7d8f98" opacity="0.85"></path>
+              <path d="{{ simEscOferta }}" fill="#1d2b33"></path>
+              <sc-for list="{{ simSelMarkers }}" as="sm" hint-placeholder-count="0">
+                <circle cx="{{ sm.cx }}" cy="{{ sm.cy }}" r="{{ sm.r }}" fill="#c25c3c" stroke="#ffffff" stroke-width="{{ sm.sw }}"></circle>
+              </sc-for>
+            </svg>
+          </div>
+          <div data-r="legend" style="flex:none; width:220px; display:flex; flex-direction:column; justify-content:center; gap:9px;">
+            <div style="font-family:'Archivo',sans-serif; font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#5a6066; margin-bottom:4px;">Legenda · {{ simLegendTitulo }}</div>
+            <div style="display:flex; align-items:center; gap:9px;"><span style="width:11px; height:11px; border-radius:50%; background:{{ simLeg1Cor }}; flex:none;"></span><span style="font-size:12px; color:#5a6066;">{{ simLeg1Txt }}</span></div>
+            <div style="display:flex; align-items:center; gap:9px;"><span style="width:11px; height:11px; border-radius:50%; background:{{ simLeg2Cor }}; flex:none;"></span><span style="font-size:12px; color:#5a6066;">{{ simLeg2Txt }}</span></div>
+            <div style="display:flex; align-items:center; gap:9px;"><span style="width:11px; height:11px; border-radius:50%; background:{{ simLeg3Cor }}; flex:none;"></span><span style="font-size:12px; color:#5a6066;">{{ simLeg3Txt }}</span></div>
+            <div style="display:flex; align-items:center; gap:9px;"><span style="width:11px; height:11px; border-radius:50%; background:#c9c2b4; flex:none;"></span><span style="font-size:12px; color:#5a6066;">Sem demanda na etapa</span></div>
+            <div style="border-top:1px solid #e2dccf; margin:6px 0 2px;"></div>
+            <div style="display:flex; align-items:center; gap:9px;"><span style="width:9px; height:9px; border-radius:50%; background:#1d2b33; flex:none;"></span><span style="font-size:12px; color:#5a6066;">Escola pública com a etapa hoje</span></div>
+            <div style="display:flex; align-items:center; gap:9px;"><span style="width:8px; height:8px; border-radius:50%; background:#7d8f98; flex:none;"></span><span style="font-size:12px; color:#5a6066;">Local candidato (escola existente sem a etapa)</span></div>
+            <div style="display:flex; align-items:center; gap:9px;"><span style="width:13px; height:13px; border-radius:50%; background:#c25c3c; border:2px solid #fff; box-shadow:0 0 0 1px #c25c3c; flex:none;"></span><span style="font-size:12px; color:#5a6066;">Nova escola simulada</span></div>
+            <div style="font-size:11.5px; color:#9a958c; margin-top:8px; line-height:1.5;">Clique no mapa para posicionar uma nova escola: o ponto gruda no local candidato mais próximo, onde há rotas reais calculadas. Clique de novo para remover.</div>
+          </div>
+        </div>
+
+        <sc-if value="{{ isSimTabSim }}" hint-placeholder-val="{{ true }}">
+          <div data-r="muni3" style="display:grid; grid-template-columns:1fr 1fr 184px; gap:30px; align-items:stretch; margin-top:34px;">
+            <div>
+              <div style="border-top:3px solid #1d2b33; padding-top:14px; margin-bottom:20px;"><span style="font-family:'Archivo',sans-serif; font-size:13px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#1d2b33;">Hoje</span><span style="font-size:13px; color:#9a958c; margin-left:7px;">rede atual</span></div>
+              <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:22px;">
+                <div><div style="font-size:12px; color:#6e7269; margin-bottom:5px; font-weight:600;">Caminhável</div><div style="font-family:'Archivo',sans-serif; font-weight:800; font-size:31px; color:#3f6b4e; line-height:1; letter-spacing:-.03em;">{{ sAntCam }}<span style="font-size:17px;">%</span></div><div style="font-size:11.5px; color:#9a958c; margin-top:4px;">{{ sAntCamN }} crianças</div></div>
+                <div><div style="font-size:12px; color:#6e7269; margin-bottom:5px; font-weight:600;">Só transporte</div><div style="font-family:'Archivo',sans-serif; font-weight:800; font-size:31px; color:#b07f24; line-height:1; letter-spacing:-.03em;">{{ sAntTr }}<span style="font-size:17px;">%</span></div><div style="font-size:11.5px; color:#9a958c; margin-top:4px;">{{ sAntTrN }} crianças</div></div>
+                <div><div style="font-size:12px; color:#6e7269; margin-bottom:5px; font-weight:600;">Sem acesso</div><div style="font-family:'Archivo',sans-serif; font-weight:800; font-size:31px; color:#b14a36; line-height:1; letter-spacing:-.03em;">{{ sAntSem }}<span style="font-size:17px;">%</span></div><div style="font-size:11.5px; color:#9a958c; margin-top:4px;">{{ sAntSemN }} crianças</div></div>
+              </div>
+              <div style="display:flex; height:48px; overflow:hidden; background:#e6ddcf;">
+                <div style="width:{{ sAntWCam }}; background:#3f6b4e;"></div>
+                <div style="width:{{ sAntWTr }}; background:#c79a3f;"></div>
+                <div style="width:{{ sAntWSem }}; background:#b14a36;"></div>
+              </div>
+              <div style="font-size:12.5px; color:#5a6066; margin-top:13px; line-height:1.6;">Tempo médio até a escola mais próxima: <strong style="color:#1b242a;">{{ sAntTempo }} min</strong><br>Distância média: <strong style="color:#1b242a;">{{ sAntDist }} km</strong></div>
+            </div>
+            <div>
+              <div style="border-top:3px solid #c25c3c; padding-top:14px; margin-bottom:20px;"><span style="font-family:'Archivo',sans-serif; font-size:13px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#1d2b33;">Com as novas escolas</span><span style="font-size:13px; color:#9a958c; margin-left:7px;">{{ sSelCountTxt }}</span></div>
+              <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:22px;">
+                <div><div style="font-size:12px; color:#6e7269; margin-bottom:5px; font-weight:600;">Caminhável</div><div style="font-family:'Archivo',sans-serif; font-weight:800; font-size:31px; color:#3f6b4e; line-height:1; letter-spacing:-.03em;">{{ sDepCam }}<span style="font-size:17px;">%</span></div><div style="font-size:11.5px; color:#9a958c; margin-top:4px;">{{ sDepCamN }} crianças</div></div>
+                <div><div style="font-size:12px; color:#6e7269; margin-bottom:5px; font-weight:600;">Só transporte</div><div style="font-family:'Archivo',sans-serif; font-weight:800; font-size:31px; color:#b07f24; line-height:1; letter-spacing:-.03em;">{{ sDepTr }}<span style="font-size:17px;">%</span></div><div style="font-size:11.5px; color:#9a958c; margin-top:4px;">{{ sDepTrN }} crianças</div></div>
+                <div><div style="font-size:12px; color:#6e7269; margin-bottom:5px; font-weight:600;">Sem acesso</div><div style="font-family:'Archivo',sans-serif; font-weight:800; font-size:31px; color:#b14a36; line-height:1; letter-spacing:-.03em;">{{ sDepSem }}<span style="font-size:17px;">%</span></div><div style="font-size:11.5px; color:#9a958c; margin-top:4px;">{{ sDepSemN }} crianças</div></div>
+              </div>
+              <div style="display:flex; height:48px; overflow:hidden; background:#e6ddcf;">
+                <div style="width:{{ sDepWCam }}; background:#3f6b4e;"></div>
+                <div style="width:{{ sDepWTr }}; background:#c79a3f;"></div>
+                <div style="width:{{ sDepWSem }}; background:#b14a36;"></div>
+              </div>
+              <div style="font-size:12.5px; color:#5a6066; margin-top:13px; line-height:1.6;">Tempo médio até a escola mais próxima: <strong style="color:#1b242a;">{{ sDepTempo }} min</strong><br>Distância média: <strong style="color:#1b242a;">{{ sDepDist }} km</strong></div>
+            </div>
+            <div style="display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; background:#fff; border:2px solid #1d2b33; padding:24px 16px;">
+              <div style="font-family:'Archivo',sans-serif; font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:#5a6066; margin-bottom:10px;">Ganham acesso caminhável</div>
+              <div style="font-family:'Archivo',sans-serif; font-weight:800; font-size:40px; color:#3f6b4e; line-height:1; letter-spacing:-.03em;">{{ sGanhoCam }}</div>
+              <div style="font-size:11.5px; color:#6e7269; margin-top:11px; line-height:1.4; font-weight:500;">crianças</div>
+              <div style="border-top:1px solid #e2dccf; width:70%; margin:14px 0;"></div>
+              <div style="font-family:'Archivo',sans-serif; font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:#5a6066; margin-bottom:10px;">Saem de sem acesso</div>
+              <div style="font-family:'Archivo',sans-serif; font-weight:800; font-size:40px; color:#c25c3c; line-height:1; letter-spacing:-.03em;">{{ sGanhoSem }}</div>
+              <div style="font-size:11.5px; color:#6e7269; margin-top:11px; line-height:1.4; font-weight:500;">crianças</div>
+            </div>
+          </div>
+
+          <sc-if value="{{ simTemSel }}" hint-placeholder-val="{{ true }}">
+            <div style="margin-top:30px;">
+              <div style="display:flex; align-items:center; justify-content:space-between; max-width:920px; margin-bottom:12px;">
+                <div style="font-family:'Archivo',sans-serif; font-weight:700; font-size:16px; color:#1b242a; letter-spacing:-.01em;">Novas escolas simuladas</div>
+                <div onClick="{{ simLimpar }}" style="font-size:12px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#c25c3c; cursor:pointer; padding:6px 12px; border:1px solid #e6cfc5; border-radius:4px;">Limpar tudo</div>
+              </div>
+              <div style="display:flex; flex-direction:column; max-width:920px;">
+                <sc-for list="{{ simSelList }}" as="se" hint-placeholder-count="1">
+                  <div style="display:flex; align-items:center; gap:16px; padding:11px 0; border-bottom:1px solid #ebe5d8;">
+                    <span style="width:13px; height:13px; border-radius:50%; background:#c25c3c; border:2px solid #fff; box-shadow:0 0 0 1px #c25c3c; flex:none;"></span>
+                    <div style="flex:1; min-width:0;">
+                      <div style="font-size:14px; font-weight:600; color:#1b242a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ se.nome }}</div>
+                      <div style="font-size:11.5px; color:#9a958c; margin-top:2px;">{{ se.tipo }}</div>
+                    </div>
+                    <div style="font-size:13px; color:#5a6066; text-align:right; flex:none; font-variant-numeric:tabular-nums;">{{ se.kidsTxt }}</div>
+                    <div onClick="{{ se.onRemove }}" style="font-size:15px; color:#b14a36; cursor:pointer; padding:2px 8px; flex:none;">×</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+        </sc-if>
+
+        <sc-if value="{{ isSimTabOnde }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top:30px;">
+            <div style="font-family:'Archivo',sans-serif; font-weight:700; font-size:16px; color:#1b242a; margin-bottom:4px; letter-spacing:-.01em;">Onde abrir a oferta rende mais?</div>
+            <div style="font-size:12.5px; color:#9a958c; margin-bottom:16px; max-width:720px; line-height:1.5;">Locais candidatos ordenados por quantas crianças hoje acima de {{ simXTxt }} min passariam a ficar dentro desse tempo se a etapa fosse ofertada ali — calculado com as rotas OSM reais. Clique em “+ Simular” para adicionar o local à simulação.</div>
+            <div style="display:flex; flex-direction:column; max-width:920px;">
+              <sc-for list="{{ simRank }}" as="rk" hint-placeholder-count="5">
+                <div style="display:flex; align-items:center; gap:16px; padding:10px 0; border-bottom:1px solid #ebe5d8;">
+                  <div style="font-family:'Archivo',sans-serif; font-weight:700; font-size:13px; color:#b3aa9c; width:24px; flex:none; font-variant-numeric:tabular-nums;">{{ rk.num }}</div>
+                  <div style="flex:1; min-width:0;">
+                    <div style="font-size:14px; font-weight:600; color:#1b242a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ rk.nome }}</div>
+                    <div style="font-size:11.5px; color:#9a958c; margin-top:2px;">{{ rk.tipo }}</div>
+                  </div>
+                  <div style="flex:1; height:16px; background:#ece6d9; border-radius:3px; overflow:hidden;"><div style="width:{{ rk.barW }}; height:100%; background:#c25c3c;"></div></div>
+                  <div style="width:120px; flex:none; text-align:right; font-size:13.5px; font-weight:700; color:#1b242a; font-variant-numeric:tabular-nums;">{{ rk.ganhoTxt }}</div>
+                  <div onClick="{{ rk.onAdd }}" style="font-size:11.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#fff; background:#c25c3c; cursor:pointer; padding:7px 12px; border-radius:4px; flex:none;">+ Simular</div>
+                </div>
+              </sc-for>
+            </div>
+            <sc-if value="{{ simRankVazio }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size:13.5px; color:#8a857c; margin-top:14px;">Nenhum local candidato reduz o tempo abaixo de {{ simXTxt }} min para as crianças descobertas — considere um tempo-alvo maior ou a construção de unidade em novo ponto do território.</div>
+            </sc-if>
+          </div>
+        </sc-if>
+
+        <div style="font-size:11.5px; color:#a39c90; margin-top:30px; line-height:1.55; max-width:760px;">Metodologia: cada ponto do mapa é um quadrado da malha estatística (≈1 km²) com crianças estimadas pela divisão da população do setor censitário entre seus quadrados (idêntica à Análise 1). <strong style="color:#7a7468;">Caminhável</strong> usa a menor distância roteada (OSM) até escola pública com a etapa, comparada ao raio do cenário; <strong style="color:#7a7468;">Só transporte / Sem acesso</strong> usam o menor tempo roteado comparado ao threshold empírico da Análise 2 (percentil selecionado). A nova escola simulada é ancorada em um local de escola existente para usar rotas reais — não há estimativa em linha reta.</div>
+      </sc-if>
+
+      <sc-if value="{{ simIndisponivel }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-top:40px; font-size:14px; color:#8a857c;">Dados do simulador não encontrados (sim_index.js / sim_data). Rode build_simulador_data.py e publique os arquivos.</div>
+      </sc-if>
+    </sc-if>
+
     <!-- =================== SOBRE =================== -->
     <sc-if value="{{ isSobre }}" hint-placeholder-val="{{ true }}">
       <div style="font-family:'Archivo',sans-serif; font-size:12px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:#c25c3c; margin-bottom:8px;">Sobre o projeto</div>
       <h2 data-r="h2" style="font-family:'Archivo',sans-serif; font-weight:800; font-size:44px; line-height:1; margin:0; color:#1b242a; letter-spacing:-.025em;">Metodologia, dados e equipe</h2>
-      <div style="font-size:15.5px; color:#5a6066; margin-top:14px; line-height:1.6; max-width:760px;">Esta ferramenta diagnostica a acessibilidade à educação infantil nos 184 municípios do Ceará, comparando um modelo baseado em <strong style="color:#1b242a;">distância</strong> com um modelo calibrado por <strong style="color:#1b242a;">tempo de deslocamento</strong>, para apoiar decisões de oferta de vagas e transporte escolar.</div>
+      <div style="font-size:15.5px; color:#5a6066; margin-top:14px; line-height:1.6; max-width:760px;">Esta ferramenta diagnostica a acessibilidade à educação infantil nos 184 municípios do Ceará, comparando dois critérios de classificação: um baseado em <strong style="color:#1b242a;">distância percorrida</strong> e outro baseado em <strong style="color:#1b242a;">tempo de deslocamento</strong>, para apoiar decisões de oferta de vagas e transporte escolar.</div>
 
       <div data-r="sobre2" style="display:grid; grid-template-columns:1.55fr 1fr; gap:48px; margin-top:40px; align-items:start;">
         <div>
           <div style="font-family:'Archivo',sans-serif; font-weight:700; font-size:18px; color:#1b242a; margin-bottom:22px; letter-spacing:-.01em; padding-bottom:12px; border-bottom:2px solid #1d2b33;">Metodologia de cálculo</div>
           <div style="display:flex; flex-direction:column; gap:26px;">
             <div style="display:flex; gap:20px;"><div style="font-family:'Archivo',sans-serif; font-weight:800; font-size:26px; color:#c25c3c; line-height:1; flex:none; width:42px;">01</div><div><div style="font-family:'Archivo',sans-serif; font-weight:700; font-size:15px; color:#1b242a; margin-bottom:6px;">População-alvo</div><div style="font-size:14px; color:#5a6066; line-height:1.6;">Para cada município estimamos quantas crianças de creche e pré-escola devem ser atendidas, a partir das bases do PNATE / PNE.</div></div></div>
-            <div style="display:flex; gap:20px;"><div style="font-family:'Archivo',sans-serif; font-weight:800; font-size:26px; color:#c25c3c; line-height:1; flex:none; width:42px;">02</div><div><div style="font-family:'Archivo',sans-serif; font-weight:700; font-size:15px; color:#1b242a; margin-bottom:6px;">Modelo original — distância</div><div style="font-size:14px; color:#5a6066; line-height:1.6;">Cada criança é classificada como <strong style="color:#3f6b4e;">Caminhável</strong> (dentro do raio a pé), <strong style="color:#b07f24;">Só transporte</strong> (alcançável por transporte escolar) ou <strong style="color:#b14a36;">Sem acesso</strong> (fora do raio de transporte), medindo a distância sobre a malha viária até a escola mais próxima.</div></div></div>
-            <div style="display:flex; gap:20px;"><div style="font-family:'Archivo',sans-serif; font-weight:800; font-size:26px; color:#c25c3c; line-height:1; flex:none; width:42px;">03</div><div><div style="font-family:'Archivo',sans-serif; font-weight:700; font-size:15px; color:#1b242a; margin-bottom:6px;">Modelo calibrado — tempo (percentil)</div><div style="font-size:14px; color:#5a6066; line-height:1.6;">Os raios são recalibrados usando o <strong style="color:#1b242a;">tempo</strong> real de deslocamento em vez da distância, adotando o percentil de referência (p75 / p90 / p95) dos thresholds empíricos observados em áreas urbanas e rurais.</div></div></div>
-            <div style="display:flex; gap:20px;"><div style="font-family:'Archivo',sans-serif; font-weight:800; font-size:26px; color:#c25c3c; line-height:1; flex:none; width:42px;">04</div><div><div style="font-family:'Archivo',sans-serif; font-weight:700; font-size:15px; color:#1b242a; margin-bottom:6px;">Δ e leitura do diagnóstico</div><div style="font-size:14px; color:#5a6066; line-height:1.6;">O <strong style="color:#1b242a;">Δ Sem acesso</strong> compara o modelo calibrado ao original, em pontos percentuais: valores negativos indicam melhora; positivos, piora. Mapa e ranking estaduais destacam onde a recalibração mais altera o diagnóstico.</div></div></div>
+            <div style="display:flex; gap:20px;"><div style="font-family:'Archivo',sans-serif; font-weight:800; font-size:26px; color:#c25c3c; line-height:1; flex:none; width:42px;">02</div><div><div style="font-family:'Archivo',sans-serif; font-weight:700; font-size:15px; color:#1b242a; margin-bottom:6px;">Modelo de distância</div><div style="font-size:14px; color:#5a6066; line-height:1.6;">Cada criança é classificada como <strong style="color:#3f6b4e;">Caminhável</strong> (dentro do raio a pé), <strong style="color:#b07f24;">Só transporte</strong> (alcançável por transporte escolar) ou <strong style="color:#b14a36;">Sem acesso</strong> (fora do raio de transporte), medindo a distância sobre a malha viária até a escola mais próxima.</div></div></div>
+            <div style="display:flex; gap:20px;"><div style="font-family:'Archivo',sans-serif; font-weight:800; font-size:26px; color:#c25c3c; line-height:1; flex:none; width:42px;">03</div><div><div style="font-family:'Archivo',sans-serif; font-weight:700; font-size:15px; color:#1b242a; margin-bottom:6px;">Modelo de tempo</div><div style="font-size:14px; color:#5a6066; line-height:1.6;">A classificação por tempo usa thresholds empíricos de deslocamento, definidos por percentis (p75 / p90 / p95) dos tempos observados em áreas urbanas e rurais.</div></div></div>
+            <div style="display:flex; gap:20px;"><div style="font-family:'Archivo',sans-serif; font-weight:800; font-size:26px; color:#c25c3c; line-height:1; flex:none; width:42px;">04</div><div><div style="font-family:'Archivo',sans-serif; font-weight:700; font-size:15px; color:#1b242a; margin-bottom:6px;">Δ e leitura do diagnóstico</div><div style="font-size:14px; color:#5a6066; line-height:1.6;">O <strong style="color:#1b242a;">Δ Sem acesso</strong> compara o critério de tempo ao critério de distância, em pontos percentuais: valores negativos indicam redução da população sem acesso; valores positivos indicam aumento. Mapa e ranking estaduais destacam onde a mudança de critério mais altera o diagnóstico.</div></div></div>
           </div>
         </div>
 
@@ -452,7 +648,7 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1340,&quot;height&quot;:900}}">
 class Component extends DCLogic {
-  state = { page:'escolas', fase:'Daycare', cenario:'C2', percentil:'p90', municipio:'Abaiara', tab:'mapa', mapVar:'delta_sem_acesso', escVar:'matriculas', infoOpen:false, geo:null, detalhe:null, hover:null };
+  state = { page:'escolas', fase:'Daycare', cenario:'C2', percentil:'p90', municipio:'Abaiara', tab:'mapa', mapVar:'delta_sem_acesso', escVar:'matriculas', infoOpen:false, percentilInfoOpen:false, geo:null, detalhe:null, hover:null, simTab:'simular', simSel:[], simData:null, simLoading:false, simX:15, simHover:null };
 
   componentDidMount(){
     if(window.CEARA){ this.setState({geo:window.CEARA}); }
@@ -471,15 +667,267 @@ class Component extends DCLogic {
   colDelta(v,mx){ const c={pos:'#b14a36', mid:'#efe7da', neg:'#2f6d6b'}, t=Math.max(-1,Math.min(1, v/(mx||0.4))); return t>=0 ? this.hexLerp(c.mid,c.pos,t) : this.hexLerp(c.mid,c.neg,-t); }
   colProp(v,mx){ const t=mx>0?Math.min(1,v/mx):0; return t<0.5 ? this.hexLerp('#f4ede1','#cf7a4a',t*2) : this.hexLerp('#cf7a4a','#7a2414',(t-0.5)*2); }
   hash(s){ let h=0; for(let i=0;i<s.length;i++){ h=(h*31+s.charCodeAt(i))>>>0; } return (h%1000)/1000; }
-  fk(){ return this.state.fase==='Daycare'?'D':'P'; }
+  fk(){ return this.state.fase==='Total'?'T':(this.state.fase==='Daycare'?'D':'P'); }
   split(sem,name,salt){ const h=this.hash(name+salt), rem=Math.max(0,1-sem), cam=rem*(0.42+0.20*h); return {cam, tr:rem-cam, sem}; }
   num(f){ return (f*100).toFixed(1); }
   lbl(f){ return Math.round(f*100)+'%'; }
   wpc(f){ return (f*100).toFixed(3)+'%'; }
 
+  // ================= Simulador =================
+  loadSimFor(nome){
+    const SI=window.SIM_INDEX; if(!SI) return;
+    const rec=SI.munis.find(m=>m.n===nome)||SI.munis[0];
+    if(this.state.simData && this.state.simData.cd===rec.cd) return;
+    this.setState({simLoading:true, simSel:[], simHover:null});
+    fetch('sim_data/mun_'+rec.cd+'.json').then(r=>r.ok?r.json():null).then(d=>{
+      if(d){ this._sim=null; this._simRes=null; this._simDots=null; this._simRank=null; this.setState({simData:d, simLoading:false}); }
+      else this.setState({simLoading:false});
+    }).catch(()=>this.setState({simLoading:false}));
+  }
+  simEnsure(D){
+    if(this._sim && this._sim.data===D) return this._sim;
+    const routesByQuad=D.quads.map(()=>[]), routesByEsc=D.esc.map(()=>[]);
+    for(const rt of D.rotas){ routesByQuad[rt[0]].push([rt[1],rt[2],rt[3]]); routesByEsc[rt[1]].push([rt[0],rt[2],rt[3]]); }
+    const paresByQuad=D.quads.map(()=>[]);
+    D.pares.forEach((p,i)=>paresByQuad[p[0]].push(i));
+    let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+    for(const [x,y] of D.quads){ if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; }
+    for(const e of D.esc){ if(e[0]<x0)x0=e[0]; if(e[0]>x1)x1=e[0]; if(e[1]<y0)y0=e[1]; if(e[1]>y1)y1=e[1]; }
+    const pad=Math.max(x1-x0,y1-y0)*0.05+0.5;
+    this._sim={data:D, routesByQuad, routesByEsc, paresByQuad, vb:[x0-pad, y0-pad, (x1-x0)+2*pad, (y1-y0)+2*pad]};
+    this._simRes=null; this._simDots=null; this._simRank=null;
+    return this._sim;
+  }
+  simCompute(sim,I,T,key){
+    if(this._simRes && this._simRes.key===key) return this._simRes;
+    const D=sim.data, sel=this.state.simSel;
+    const nQ=D.quads.length, nP=D.pares.length;
+    const bestD=new Float64Array(nQ).fill(Infinity), bestT=new Float64Array(nQ).fill(Infinity);
+    for(const ei of sel){ for(const [q,d,t] of sim.routesByEsc[ei]){ if(d<bestD[q])bestD[q]=d; if(t<bestT[q])bestT[q]=t; } }
+    const novoD=new Float64Array(nP), novoT=new Float64Array(nP);
+    const clA=new Int8Array(nP), clB=new Int8Array(nP);
+    let tot=0, sTA=0,sTB=0,sDA=0,sDB=0;
+    const antes=[0,0,0], depois=[0,0,0];
+    for(let i=0;i<nP;i++){
+      const p=D.pares[i], c=p[I.c], d0=p[I.d], t0=p[I.t];
+      if(c==null||d0==null||t0==null){ clA[i]=-1; clB[i]=-1; continue; }
+      const q=p[0], walk=p[1]===1?T.wU:T.wR, tmax=p[1]===1?T.tU:T.tR;
+      const nd=Math.min(d0,bestD[q]), nt=Math.min(t0,bestT[q]);
+      novoD[i]=nd; novoT[i]=nt;
+      const a = d0<=walk?0:(t0<=tmax?1:2);
+      const b = nd<=walk?0:(nt<=tmax?1:2);
+      clA[i]=a; clB[i]=b;
+      if(c>0){ tot+=c; antes[a]+=c; depois[b]+=c; sTA+=c*t0; sTB+=c*nt; sDA+=c*d0; sDB+=c*nd; }
+    }
+    this._simRes={key, novoD, novoT, clA, clB, tot, antes, depois,
+      tempoA:tot?sTA/tot:0, tempoB:tot?sTB/tot:0, distA:tot?sDA/tot:0, distB:tot?sDB/tot:0};
+    return this._simRes;
+  }
+  simDotsBuild(sim,I,R,key){
+    if(this._simDots && this._simDots.key===key) return this._simDots;
+    const D=sim.data, S=this.state;
+    const r=Math.max(sim.vb[2],sim.vb[3])/250;
+    const f=n=>n.toFixed(2);
+    const circ=(x,y,rr)=>'M'+f(x-rr)+' '+f(y)+'a'+f(rr)+' '+f(rr)+' 0 1 0 '+f(2*rr)+' 0a'+f(rr)+' '+f(rr)+' 0 1 0 '+f(-2*rr)+' 0';
+    const dots=['','','',''];
+    for(let q=0;q<D.quads.length;q++){
+      let any=false, temC=false, hot=false;
+      const soma=[0,0,0];
+      for(const pi of sim.paresByQuad[q]){
+        if(R.clB[pi]<0) continue;
+        any=true;
+        const c=D.pares[pi][I.c];
+        if(c>0){ temC=true; soma[R.clB[pi]]+=c; if(R.novoT[pi]>S.simX) hot=true; }
+      }
+      if(!any) continue;
+      let slot;
+      if(!temC) slot=0;
+      else if(S.simTab==='onde') slot=hot?3:1;
+      else slot=(soma[2]>=soma[1]&&soma[2]>=soma[0])?3:((soma[1]>=soma[0])?2:1);
+      dots[slot]+=circ(D.quads[q][0], D.quads[q][1], r);
+    }
+    let cand='', ofer='';
+    const isCre=I.c===2;
+    D.esc.forEach(e=>{
+      if((isCre?e[3]:e[4])===1) ofer+=circ(e[0],e[1],r*0.8);
+      else cand+=circ(e[0],e[1],r*0.58);
+    });
+    this._simDots={key, dots, cand, ofer, r};
+    return this._simDots;
+  }
+  simRankBuild(sim,I,R,X,key){
+    if(this._simRank && this._simRank.key===key) return this._simRank;
+    const D=sim.data;
+    const rank=[];
+    D.esc.forEach((e,ei)=>{
+      let g=0;
+      for(const [q,d,t] of sim.routesByEsc[ei]){
+        if(t>X) continue;
+        for(const pi of sim.paresByQuad[q]){
+          const c=D.pares[pi][I.c];
+          if(c>0 && R.clB[pi]>=0 && R.novoT[pi]>X) g+=c;
+        }
+      }
+      if(g>0.05) rank.push([ei,g]);
+    });
+    rank.sort((a,b)=>b[1]-a[1]);
+    this._simRank={key, rank:rank.slice(0,12)};
+    return this._simRank;
+  }
+  simSvgXY(e){
+    let svg=e.currentTarget;
+    if(!svg || String(svg.tagName).toLowerCase()!=='svg'){ svg=e.target && (e.target.ownerSVGElement || (e.target.closest && e.target.closest('svg'))); }
+    if(!svg || !this._sim) return null;
+    const rect=svg.getBoundingClientRect(), vb=this._sim.vb;
+    const s=Math.min(rect.width/vb[2], rect.height/vb[3]);
+    if(!(s>0)) return null;
+    const ox=(rect.width-vb[2]*s)/2, oy=(rect.height-vb[3]*s)/2;
+    return [vb[0]+(e.clientX-rect.left-ox)/s, vb[1]+(e.clientY-rect.top-oy)/s];
+  }
+  fmtKids(x){ return x>=99.5? Math.round(x).toLocaleString('pt-BR') : (Math.round(x*10)/10).toLocaleString('pt-BR'); }
+  simVals(v){
+    const S=this.state, SI=window.SIM_INDEX;
+    v.isSimulador = S.page==='simulador';
+    if(!v.isSimulador) return;
+    v.simMunicipios = SI? SI.munis.map(m=>m.n).slice().sort((a,b)=>a.localeCompare(b,'pt')) : [];
+    v.onSimMunicipio = e=>{ const n=e.target.value; this.setState({municipio:n, simSel:[], simHover:null}); this.loadSimFor(n); };
+    v.goSimTabSim=()=>this.setState({simTab:'simular'});
+    v.goSimTabOnde=()=>this.setState({simTab:'onde'});
+    v.isSimTabSim=S.simTab==='simular'; v.isSimTabOnde=S.simTab==='onde';
+    v.tabSimColor=S.simTab==='simular'?'#1b242a':'#9a958c'; v.tabSimBorder=S.simTab==='simular'?'3px solid #c25c3c':'3px solid transparent';
+    v.tabOndeColor=S.simTab==='onde'?'#1b242a':'#9a958c'; v.tabOndeBorder=S.simTab==='onde'?'3px solid #c25c3c':'3px solid transparent';
+    v.simLoading=S.simLoading;
+    v.simIndisponivel=!SI;
+    v.simReady=!!(SI && S.simData && !S.simLoading);
+    v.simX=S.simX; v.simXTxt=String(S.simX).replace('.',',');
+    v.onSimX=e=>this.setState({simX:parseFloat(e.target.value)});
+    // defaults (usados enquanto os dados não chegam)
+    Object.assign(v,{ simThrTxt:'', simViewBox:'0 0 10 10', simBase:[], simDots0:'', simDots1:'', simDots2:'', simDots3:'',
+      simFill0:'#c9c2b4', simFill1:'#3f6b4e', simFill2:'#c79a3f', simFill3:'#b14a36', simEscCand:'', simEscOferta:'',
+      simSelMarkers:[], simHoverText:'', simHoverBg:'0.45', simMapClick:()=>{}, simMapMove:()=>{}, simMapLeave:()=>{},
+      sAntCam:'0.0', sAntTr:'0.0', sAntSem:'0.0', sAntCamN:'0', sAntTrN:'0', sAntSemN:'0',
+      sDepCam:'0.0', sDepTr:'0.0', sDepSem:'0.0', sDepCamN:'0', sDepTrN:'0', sDepSemN:'0',
+      sAntWCam:'0%', sAntWTr:'0%', sAntWSem:'0%', sDepWCam:'0%', sDepWTr:'0%', sDepWSem:'0%',
+      sAntTempo:'0.0', sAntDist:'0.0', sDepTempo:'0.0', sDepDist:'0.0', sGanhoCam:'0', sGanhoSem:'0',
+      sSelCountTxt:'', simTemSel:false, simSelList:[], simRank:[], simRankVazio:false, simDescTxt:'',
+      simLegendTitulo:'classificação simulada', simLeg1Cor:'#3f6b4e', simLeg1Txt:'Caminhável — dentro do raio a pé',
+      simLeg2Cor:'#c79a3f', simLeg2Txt:'Só transporte — tempo dentro do threshold',
+      simLeg3Cor:'#b14a36', simLeg3Txt:'Sem acesso — acima do threshold de tempo' });
+    if(!v.simReady) return;
+
+    const D=S.simData, sim=this.simEnsure(D);
+    const isCre=this.fk()==='D';
+    const I=isCre?{c:2,d:3,t:4}:{c:5,d:6,t:7};
+    this._simI=I;
+    const P=SI.parametros, fkey=isCre?'creche':'pre_escola', cen=P.cenarios[S.cenario];
+    const T={ wU:cen.caminhavel_urb_km, wR:cen.caminhavel_rur_km,
+      tU:P.tempos_recomendados_min[fkey].urbana[S.percentil],
+      tR:P.tempos_recomendados_min[fkey].rural[S.percentil] };
+    this._simT=T;
+    const f1=x=>x.toFixed(1).replace('.',',');
+    v.simThrTxt='Caminhável ('+S.cenario+'): até '+f1(T.wU)+' km urbano · '+f1(T.wR)+' km rural. Tempo máximo ('+S.percentil+'): até '+f1(T.tU)+' min urbano · '+f1(T.tR)+' min rural.';
+
+    const selKey=S.simSel.slice().sort((a,b)=>a-b).join('_');
+    const key=[D.cd, this.fk(), S.cenario, S.percentil, selKey].join('|');
+    const R=this.simCompute(sim,I,T,key);
+    const dots=this.simDotsBuild(sim,I,R,key+'|'+S.simTab+'|'+S.simX);
+
+    v.simViewBox=sim.vb.map(n=>n.toFixed(2)).join(' ');
+    v.simBase = window.CEARA? window.CEARA.munis.map(m=>({d:m.d, fill:m.n===S.municipio?'#f6f0e5':'#e9e2d4', sw:'0.4'})) : [];
+    v.simDots0=dots.dots[0]; v.simDots1=dots.dots[1]; v.simDots2=dots.dots[2]; v.simDots3=dots.dots[3];
+    v.simEscCand=dots.cand; v.simEscOferta=dots.ofer;
+    if(S.simTab==='onde'){
+      v.simLegendTitulo='cobertura no tempo-alvo';
+      v.simLeg1Cor='#9db8a0'; v.simLeg1Txt='Dentro do tempo-alvo ('+v.simXTxt+' min)';
+      v.simLeg2Cor='#efe9df'; v.simLeg2Txt='';
+      v.simLeg3Cor='#b14a36'; v.simLeg3Txt='Acima do tempo-alvo — descoberta';
+      v.simFill1='#9db8a0'; v.simFill2='none';
+    }
+    v.simSelMarkers=S.simSel.map(ei=>({cx:D.esc[ei][0].toFixed(2), cy:D.esc[ei][1].toFixed(2), r:(dots.r*1.8).toFixed(2), sw:(dots.r*0.55).toFixed(2)}));
+
+    v.simMapClick=e=>{
+      const pt=this.simSvgXY(e); if(!pt) return;
+      const rr=Math.max(sim.vb[2],sim.vb[3])/30; let best=-1,bd=rr*rr;
+      D.esc.forEach((es,ei)=>{ const dx=es[0]-pt[0],dy=es[1]-pt[1],dd=dx*dx+dy*dy; if(dd<bd){bd=dd;best=ei;} });
+      if(best<0) return;
+      this.setState(s=>({ simSel: s.simSel.includes(best)? s.simSel.filter(x=>x!==best) : s.simSel.concat([best]) }));
+    };
+    v.simMapMove=e=>{
+      const pt=this.simSvgXY(e); if(!pt||!this._simRes) return;
+      const rr=Math.max(sim.vb[2],sim.vb[3])/45; let best=-1,bd=rr*rr;
+      for(let q=0;q<D.quads.length;q++){ const dx=D.quads[q][0]-pt[0],dy=D.quads[q][1]-pt[1],dd=dx*dx+dy*dy; if(dd<bd){bd=dd;best=q;} }
+      let txt=null;
+      if(best>=0){
+        let kids=0,dmin=Infinity,tmin=Infinity,any=false;
+        for(const pi of sim.paresByQuad[best]){
+          if(this._simRes.clB[pi]<0) continue;
+          any=true;
+          const c=D.pares[pi][this._simI.c]; if(c) kids+=c;
+          if(this._simRes.novoD[pi]<dmin)dmin=this._simRes.novoD[pi];
+          if(this._simRes.novoT[pi]<tmin)tmin=this._simRes.novoT[pi];
+        }
+        if(any) txt='≈'+this.fmtKids(kids)+' crianças · escola mais próxima: '+f1(dmin)+' km · '+f1(tmin)+' min';
+      }
+      const cur=S.simHover&&S.simHover.txt;
+      if(cur!==txt) this.setState({simHover: txt?{txt}:null});
+    };
+    v.simMapLeave=()=>{ if(S.simHover) this.setState({simHover:null}); };
+    v.simHoverText=S.simHover? S.simHover.txt : 'Passe o cursor sobre um ponto · clique para simular uma escola';
+    v.simHoverBg=S.simHover?'0.92':'0.45';
+
+    const fmtN=x=>Math.round(x).toLocaleString('pt-BR');
+    const pctOf=x=>R.tot? x/R.tot*100 : 0;
+    v.sAntCam=pctOf(R.antes[0]).toFixed(1); v.sAntTr=pctOf(R.antes[1]).toFixed(1); v.sAntSem=pctOf(R.antes[2]).toFixed(1);
+    v.sDepCam=pctOf(R.depois[0]).toFixed(1); v.sDepTr=pctOf(R.depois[1]).toFixed(1); v.sDepSem=pctOf(R.depois[2]).toFixed(1);
+    v.sAntCamN=fmtN(R.antes[0]); v.sAntTrN=fmtN(R.antes[1]); v.sAntSemN=fmtN(R.antes[2]);
+    v.sDepCamN=fmtN(R.depois[0]); v.sDepTrN=fmtN(R.depois[1]); v.sDepSemN=fmtN(R.depois[2]);
+    v.sAntWCam=pctOf(R.antes[0]).toFixed(3)+'%'; v.sAntWTr=pctOf(R.antes[1]).toFixed(3)+'%'; v.sAntWSem=pctOf(R.antes[2]).toFixed(3)+'%';
+    v.sDepWCam=pctOf(R.depois[0]).toFixed(3)+'%'; v.sDepWTr=pctOf(R.depois[1]).toFixed(3)+'%'; v.sDepWSem=pctOf(R.depois[2]).toFixed(3)+'%';
+    v.sAntTempo=f1(R.tempoA); v.sDepTempo=f1(R.tempoB); v.sAntDist=f1(R.distA); v.sDepDist=f1(R.distB);
+    v.sGanhoCam=fmtN(Math.max(0,R.depois[0]-R.antes[0])); v.sGanhoSem=fmtN(Math.max(0,R.antes[2]-R.depois[2]));
+    v.sSelCountTxt=S.simSel.length? (S.simSel.length+(S.simSel.length===1?' nova oferta simulada':' novas ofertas simuladas')) : 'clique no mapa para adicionar';
+    v.simTemSel=S.simSel.length>0;
+    v.simSelList=S.simSel.map(ei=>{
+      const e=D.esc[ei];
+      let kids=0;
+      for(const [q,dq] of sim.routesByEsc[ei]){
+        for(const pi of sim.paresByQuad[q]){
+          const p=D.pares[pi], c=p[I.c];
+          if(c>0 && dq<=(p[1]===1?T.wU:T.wR)) kids+=c;
+        }
+      }
+      const jaOferta=(isCre?e[3]:e[4])===1;
+      return { nome:e[5],
+        tipo:(e[2]===1?'Escola pública ativa':'Local candidato (escola privada ou inativa)')+(jaOferta?' · já oferta a etapa':' · sem a etapa hoje'),
+        kidsTxt:this.fmtKids(kids)+' crianças no raio caminhável',
+        onRemove:()=>this.setState(s=>({simSel:s.simSel.filter(x=>x!==ei)})) };
+    });
+
+    if(S.simTab==='onde'){
+      let desc=0;
+      for(let i=0;i<D.pares.length;i++){
+        const c=D.pares[i][I.c];
+        if(c>0 && R.clB[i]>=0 && R.novoT[i]>S.simX) desc+=c;
+      }
+      v.simDescTxt=fmtN(desc)+' de '+fmtN(R.tot)+' crianças ('+pctOf(desc).toFixed(1)+'%) estão hoje a mais de '+v.simXTxt+' min da escola pública mais próxima com a etapa'+(S.simSel.length?' (já considerando as novas escolas simuladas)':'')+'.';
+      const rk=this.simRankBuild(sim,I,R,S.simX,key+'|'+S.simX);
+      const gmax=rk.rank.length? rk.rank[0][1] : 1;
+      v.simRank=rk.rank.map(([ei,gn],i)=>{
+        const e=D.esc[ei];
+        return { num:String(i+1).padStart(2,'0'), nome:e[5],
+          tipo:(e[2]===1?'Escola pública ativa':'Escola privada ou inativa — local candidato')+(((isCre?e[3]:e[4])===1)?' · já oferta a etapa':' · sem a etapa hoje'),
+          barW:(gn/gmax*100).toFixed(1)+'%', ganhoTxt:'+'+this.fmtKids(gn)+' crianças',
+          onAdd:()=>this.setState(s=>({ simSel:s.simSel.includes(ei)?s.simSel:s.simSel.concat([ei]), simTab:'simular' })) };
+      });
+      v.simRankVazio=v.simRank.length===0;
+    }
+  }
+
   renderVals(){
     const S=this.state, g=S.geo, F=this.fk(), cen=S.cenario;
-    const faseLabel = S.fase==='Daycare'?'Creche':'Pré-escola';
+    const AF = F==='T'?'D':F; // Accessibility pages only support Creche/Pré; Total is only for Diagnóstico escolar.
+    const faseLabel = S.fase==='Total'?'Total':(S.fase==='Daycare'?'Creche':'Pré-escola');
+    const faseLabelA = AF==='D'?'Creche':'Pré-escola';
     const set=k=>e=>this.setState({[k]:e.target.value});
     const mkBtn=p=>({ bg:S.page===p?'#c25c3c':'transparent', color:S.page===p?'#ffffff':'#aeb9c0' });
     const v={
@@ -488,11 +936,12 @@ class Component extends DCLogic {
       isMapa:S.tab==='mapa', isRanking:S.tab==='ranking', isRobustez:S.tab==='robustez',
       municipios: g? g.munis.map(m=>m.n):[],
       onFase:set('fase'), onCenario:set('cenario'), onPercentil:set('percentil'), onMunicipio:set('municipio'), onMapVar:set('mapVar'),
-      goEscolas:()=>this.setState({page:'escolas'}), goEstadual:()=>this.setState({page:'estadual'}), goMunicipio:()=>this.setState({page:'municipio'}), goSobre:()=>this.setState({page:'sobre'}),
+      goEscolas:()=>this.setState({page:'escolas'}), goEstadual:()=>this.setState(st=>({page:'estadual', fase:st.fase==='Total'?'Daycare':st.fase})), goMunicipio:()=>this.setState(st=>({page:'municipio', fase:st.fase==='Total'?'Daycare':st.fase})), goSobre:()=>this.setState({page:'sobre'}),
+      goSimulador:()=>{ this.setState(st=>({page:'simulador', fase:st.fase==='Total'?'Daycare':st.fase})); this.loadSimFor(this.state.municipio); },
       goMapa:()=>this.setState({tab:'mapa'}), goRanking:()=>this.setState({tab:'ranking'}), goRobustez:()=>this.setState({tab:'robustez'}),
-      infoOpen:S.infoOpen, toggleInfo:()=>this.setState(s=>({infoOpen:!s.infoOpen})),
+      infoOpen:S.infoOpen, toggleInfo:()=>this.setState(s=>({infoOpen:!s.infoOpen})), percentilInfoOpen:S.percentilInfoOpen, togglePercentilInfo:()=>this.setState(s=>({percentilInfoOpen:!s.percentilInfoOpen})),
       pickEscolas:()=>this.setState({escVar:'escolas'}), pickMatriculas:()=>this.setState({escVar:'matriculas'}), pickDocentes:()=>this.setState({escVar:'docentes'}),
-      btn:{ escolas:mkBtn('escolas'), estadual:mkBtn('estadual'), municipio:mkBtn('municipio'), sobre:mkBtn('sobre') },
+      btn:{ escolas:mkBtn('escolas'), estadual:mkBtn('estadual'), municipio:mkBtn('municipio'), simulador:mkBtn('simulador'), sobre:mkBtn('sobre') },
       subtitle: faseLabel+' · Cenário '+S.cenario+' · referência '+S.percentil,
       escolasSubtitle: faseLabel+' · Censo Escolar (INEP) · 184 municípios',
       tabMapaColor:S.tab==='mapa'?'#1b242a':'#9a958c', tabMapaBorder:S.tab==='mapa'?'3px solid #c25c3c':'3px solid transparent',
@@ -500,11 +949,12 @@ class Component extends DCLogic {
       tabRobColor:S.tab==='robustez'?'#1b242a':'#9a958c', tabRobBorder:S.tab==='robustez'?'3px solid #c25c3c':'3px solid transparent',
       viewBox:'-14 -14 1028 1250'
     };
+    this.simVals(v);
     if(!g){ return v; }
 
     // ---------- Município (Tela 1) ----------
     const m = g.munis.find(x=>x.n===S.municipio) || g.munis[0];
-    const semO = m.so[F][cen], semC = m.sc[F][cen], delta = m.dl[F], pop = m.pop[F];
+    const semO = m.so[AF][cen], semC = m.sc[AF][cen], delta = m.dl[AF], pop = m.pop[AF];
     let bo, bc;
     // (B) detalhe real, se disponível: municipios_detalhe.json[municipio][fase][cenario][percentil]
     const det = S.detalhe && S.detalhe[m.n] && S.detalhe[m.n][S.fase] && S.detalhe[m.n][S.fase][cen] && S.detalhe[m.n][S.fase][cen][S.percentil];
@@ -529,8 +979,9 @@ class Component extends DCLogic {
     v.deltaWord = dpp<-0.05?'Melhora':(dpp>0.05?'Piora':'Estável');
     const base={ 'Daycare':{urb:3.80,rur:16.37}, 'Pre-school':{urb:4.60,rur:19.20} };
     const pf={ p75:0.82, p90:1.0, p95:1.16 }[S.percentil];
-    const b=base[S.fase];
-    v.thresholds=[ {fase:faseLabel, situacao:'Urbana', val:(b.urb*pf).toFixed(2)}, {fase:faseLabel, situacao:'Rural', val:(b.rur*pf).toFixed(2)} ];
+    const faseA = AF==='D'?'Daycare':'Pre-school';
+    const b=base[faseA];
+    v.thresholds=[ {fase:faseLabelA, situacao:'Urbana', val:(b.urb*pf).toFixed(2)}, {fase:faseLabelA, situacao:'Rural', val:(b.rur*pf).toFixed(2)} ];
 
     // locator map for município page
     const loc=g.munis.map(x=>({ n:x.n, d:x.d, fill:x.n===S.municipio?'#c25c3c':'#e7dfd0', stroke:x.n===S.municipio?'#1d2b33':'#d6cab4', sw:x.n===S.municipio?'1.6':'0.5', onClick:()=>this.setState({municipio:x.n}) }));
@@ -538,12 +989,12 @@ class Component extends DCLogic {
     v.muniLoc=loc;
 
     // ---------- Map / Ranking (estadual) ----------
-    const valOf = x => S.mapVar==='delta_sem_acesso' ? x.dl[F] : (S.mapVar==='prop_sem_acesso_original'? x.so[F][cen] : x.sc[F][cen]);
+    const valOf = x => S.mapVar==='delta_sem_acesso' ? x.dl[AF] : (S.mapVar==='prop_sem_acesso_original'? x.so[AF][cen] : x.sc[AF][cen]);
     const isDelta = S.mapVar==='delta_sem_acesso';
     const maxProp = Math.max(...g.munis.map(valOf).map(Math.abs));
-    const dmax = Math.max(0.05, Math.ceil(Math.max(...g.munis.map(x=>Math.abs(x.dl[F])))*20)/20);
+    const dmax = Math.max(0.05, Math.ceil(Math.max(...g.munis.map(x=>Math.abs(x.dl[AF])))*20)/20);
     const pmax = Math.max(0.05, Math.ceil(maxProp*20)/20);
-    v.mapVarLabel = isDelta ? 'Δ Sem acesso (tempo − distância)' : (S.mapVar==='prop_sem_acesso_original' ? 'Sem acesso · modelo original' : 'Sem acesso · modelo calibrado');
+    v.mapVarLabel = isDelta ? 'Δ Sem acesso (tempo − distância)' : (S.mapVar==='prop_sem_acesso_original' ? 'Sem acesso · distância' : 'Sem acesso · tempo');
     v.mapCells = g.munis.map(x=>{
       const val=valOf(x);
       const fill=isDelta?this.colDelta(val,dmax):this.colProp(val,pmax);
@@ -561,21 +1012,39 @@ class Component extends DCLogic {
     const rk = g.munis.map(x=>({n:x.n, val:valOf(x)})).sort((a,b3)=>b3.val-a.val);
     const rkMaxAbs = Math.max(...rk.map(r=>Math.abs(r.val)))||1;
     v.rankRows = rk.slice(0,15).map((r,i)=>({ num:String(i+1).padStart(2,'0'), n:r.n, valTxt: isDelta?((r.val<0?'−':'+')+Math.abs(r.val*100).toFixed(1)+' p.p.'):((r.val*100).toFixed(1)+'%'), barW:(Math.abs(r.val)/rkMaxAbs*100).toFixed(1)+'%', color: isDelta?this.colDelta(r.val,dmax):this.colProp(r.val,pmax) }));
-    v.rankTitle = isDelta ? '15 municípios com maior piora (Δ tempo − dist.)' : '15 municípios com maior % sem acesso';
+    v.rankTitle = isDelta ? '15 municípios com maior aumento em sem acesso (tempo − distância)' : '15 municípios com maior % sem acesso';
 
     // ---------- Robustez ----------
     const cens=['C1','C2','C3'];
     const mean=a=>a.reduce((s,x)=>s+x,0)/a.length;
-    const rb = cens.map(c=>({cen:c, orig:mean(g.munis.map(x=>x.so[F][c])), cal:mean(g.munis.map(x=>x.sc[F][c]))}));
+    const rb = cens.map(c=>({cen:c, orig:mean(g.munis.map(x=>x.so[AF][c])), cal:mean(g.munis.map(x=>x.sc[AF][c]))}));
     const rbMax = Math.max(...rb.flatMap(r=>[r.orig,r.cal]));
     v.robustBars = rb.map(r=>({ cen:r.cen, origH:Math.max(3,Math.round(r.orig/rbMax*180)), calH:Math.max(3,Math.round(r.cal/rbMax*180)), origTxt:(r.orig*100).toFixed(1)+'%', calTxt:(r.cal*100).toFixed(1)+'%', labelColor: r.cen===cen ? '#c25c3c' : '#9a958c' }));
 
     // ---------- Escolas (rede escolar) ----------
     const schools = g.munis.map(x=>{
-      // (A) campo esc real, se disponível: x.esc[D|P] = {escolas, matriculas, docentes}
-      const e = x.esc && x.esc[F];
-      if(e){ return {n:x.n, d:x.d, matriculas:e.matriculas, docentes:e.docentes, escolas:e.escolas}; }
-      const bb=(F==='D'?x.pop.D:x.pop.P)||0;
+      // (A) campo esc real, se disponível:
+      // x.esc.D = Creche, x.esc.P = Pré-escola, x.esc.T = Total da Educação Infantil.
+      // Para "Total", usa x.esc.T se existir. Se não existir, soma matrículas/docentes de D+P
+      // e usa soma de escolas como fallback aproximado (o total exato de escolas exige contagem única).
+      if(x.esc){
+        if(F==='T'){
+          const et=x.esc.T, ed=x.esc.D, ep=x.esc.P;
+          if(et){ return {n:x.n, d:x.d, matriculas:et.matriculas, docentes:et.docentes, escolas:et.escolas}; }
+          if(ed || ep){
+            return {
+              n:x.n, d:x.d,
+              matriculas:(ed?.matriculas||0)+(ep?.matriculas||0),
+              docentes:(ed?.docentes||0)+(ep?.docentes||0),
+              escolas:(ed?.escolas||0)+(ep?.escolas||0)
+            };
+          }
+        } else {
+          const e = x.esc[F];
+          if(e){ return {n:x.n, d:x.d, matriculas:e.matriculas, docentes:e.docentes, escolas:e.escolas}; }
+        }
+      }
+      const bb=(F==='T'?((x.pop.D||0)+(x.pop.P||0)):(F==='D'?x.pop.D:x.pop.P))||0;
       const h=this.hash(x.n+'s'), h2=this.hash(x.n+'d'), h3=this.hash(x.n+'e');
       const matriculas=Math.max(12, Math.round(bb*(0.62+0.32*h)));
       const docentes=Math.max(1, Math.round(matriculas/(13+8*h2)));
