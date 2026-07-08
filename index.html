@@ -516,6 +516,9 @@
               <sc-for list="{{ simSelMarkers }}" as="sm" hint-placeholder-count="0">
                 <circle cx="{{ sm.cx }}" cy="{{ sm.cy }}" r="{{ sm.r }}" fill="#c25c3c" stroke="#ffffff" stroke-width="{{ sm.sw }}"></circle>
               </sc-for>
+              <sc-for list="{{ simPlanMarkers }}" as="pm" hint-placeholder-count="0">
+                <circle cx="{{ pm.cx }}" cy="{{ pm.cy }}" r="{{ pm.r }}" fill="none" stroke="#c25c3c" stroke-width="{{ pm.sw }}" stroke-dasharray="3 2"></circle>
+              </sc-for>
             </svg>
           </div>
           <div data-r="legend" style="flex:none; width:220px; display:flex; flex-direction:column; justify-content:center; gap:9px;">
@@ -526,9 +529,10 @@
             <div style="display:flex; align-items:center; gap:9px;"><span style="width:11px; height:11px; border-radius:50%; background:#c9c2b4; flex:none;"></span><span style="font-size:12px; color:#5a6066;">Sem demanda na etapa</span></div>
             <div style="border-top:1px solid #e2dccf; margin:6px 0 2px;"></div>
             <div style="display:flex; align-items:center; gap:9px;"><span style="width:9px; height:9px; border-radius:50%; background:#1d2b33; flex:none;"></span><span style="font-size:12px; color:#5a6066;">Escola pública com a etapa hoje</span></div>
-            <div style="display:flex; align-items:center; gap:9px;"><span style="width:8px; height:8px; border-radius:50%; background:#7d8f98; flex:none;"></span><span style="font-size:12px; color:#5a6066;">Local candidato (escola existente sem a etapa)</span></div>
-            <div style="display:flex; align-items:center; gap:9px;"><span style="width:13px; height:13px; border-radius:50%; background:#c25c3c; border:2px solid #fff; box-shadow:0 0 0 1px #c25c3c; flex:none;"></span><span style="font-size:12px; color:#5a6066;">Nova escola simulada</span></div>
-            <div style="font-size:11.5px; color:#9a958c; margin-top:8px; line-height:1.5;">Clique no mapa para posicionar uma nova escola: o ponto gruda no local candidato mais próximo, onde há rotas reais calculadas. Clique de novo para remover.</div>
+            <div style="display:flex; align-items:center; gap:9px;"><span style="width:8px; height:8px; border-radius:50%; background:#7d8f98; flex:none;"></span><span style="font-size:12px; color:#5a6066;">Outras escolas existentes (contexto)</span></div>
+            <div style="display:flex; align-items:center; gap:9px;"><span style="width:13px; height:13px; border-radius:50%; background:#c25c3c; border:2px solid #fff; box-shadow:0 0 0 1px #c25c3c; flex:none;"></span><span style="font-size:12px; color:#5a6066;">Nova escola simulada (quadrado escolhido)</span></div>
+            <div style="display:flex; align-items:center; gap:9px;"><span style="width:11px; height:11px; border-radius:50%; background:transparent; border:2px dashed #c25c3c; flex:none;"></span><span style="font-size:12px; color:#5a6066;">Local recomendado pelo cálculo</span></div>
+            <div style="font-size:11.5px; color:#9a958c; margin-top:8px; line-height:1.5;">Clique em um quadrado da malha para posicionar uma nova escola — inclusive onde não existe escola hoje. O clique gruda na célula habitada mais próxima (a malha só cobre áreas com população). Clique de novo para remover.</div>
           </div>
         </div>
 
@@ -598,29 +602,34 @@
 
         <sc-if value="{{ isSimTabOnde }}" hint-placeholder-val="{{ false }}">
           <div style="margin-top:30px;">
-            <div style="font-family:'Archivo',sans-serif; font-weight:700; font-size:16px; color:#1b242a; margin-bottom:4px; letter-spacing:-.01em;">Onde abrir a oferta rende mais?</div>
-            <div style="font-size:12.5px; color:#9a958c; margin-bottom:16px; max-width:720px; line-height:1.5;">Locais candidatos ordenados por quantas crianças hoje acima do tempo-alvo ({{ simXAmbosTxt }}) passariam a ficar dentro dele se a etapa fosse ofertada ali — calculado com as rotas OSM reais, respeitando a situação urbana/rural de cada setor. Clique em “+ Simular” para adicionar o local à simulação.</div>
-            <div style="display:flex; flex-direction:column; max-width:920px;">
-              <sc-for list="{{ simRank }}" as="rk" hint-placeholder-count="5">
-                <div data-r="simrkrow" style="display:flex; align-items:center; gap:16px; padding:10px 0; border-bottom:1px solid #ebe5d8;">
-                  <div style="font-family:'Archivo',sans-serif; font-weight:700; font-size:13px; color:#b3aa9c; width:24px; flex:none; font-variant-numeric:tabular-nums;">{{ rk.num }}</div>
-                  <div data-r="simrkname" style="flex:1; min-width:0;">
-                    <div style="font-size:14px; font-weight:600; color:#1b242a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ rk.nome }}</div>
-                    <div style="font-size:11.5px; color:#9a958c; margin-top:2px;">{{ rk.tipo }}</div>
+            <div style="font-family:'Archivo',sans-serif; font-weight:700; font-size:16px; color:#1b242a; margin-bottom:4px; letter-spacing:-.01em;">Onde construir para atingir o tempo-alvo?</div>
+            <div style="font-size:12.5px; color:#9a958c; margin-bottom:16px; max-width:720px; line-height:1.5;">O cálculo escolhe, um a um, os quadrados da malha que mais trazem crianças descobertas para dentro do tempo-alvo ({{ simXAmbosTxt }}) — cobertura máxima gulosa sobre a estimativa conservadora de rotas encadeadas. Considera as escolas já simuladas no mapa. Recalcule após mudar o tempo-alvo ou o escopo.</div>
+            <div onClick="{{ simCalcular }}" style="display:inline-block; font-family:'Archivo',sans-serif; font-size:12.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#fff; background:#c25c3c; cursor:pointer; padding:12px 22px; border-radius:5px;">Calcular locais necessários</div>
+            <sc-if value="{{ simTemPlano }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size:13.5px; color:#1b242a; font-weight:600; margin-top:20px;">{{ simPlanoResumo }}</div>
+              <div style="display:flex; flex-direction:column; max-width:920px; margin-top:10px;">
+                <sc-for list="{{ simLocais }}" as="lc" hint-placeholder-count="3">
+                  <div data-r="simrkrow" style="display:flex; align-items:center; gap:16px; padding:10px 0; border-bottom:1px solid #ebe5d8;">
+                    <div style="font-family:'Archivo',sans-serif; font-weight:700; font-size:13px; color:#b3aa9c; width:24px; flex:none; font-variant-numeric:tabular-nums;">{{ lc.num }}</div>
+                    <div data-r="simrkname" style="flex:1; min-width:0;">
+                      <div style="font-size:14px; font-weight:600; color:#1b242a;">{{ lc.nome }}</div>
+                      <div style="font-size:11.5px; color:#9a958c; margin-top:2px;">{{ lc.tipo }}</div>
+                    </div>
+                    <div style="flex:1; height:16px; background:#ece6d9; border-radius:3px; overflow:hidden;"><div style="width:{{ lc.barW }}; height:100%; background:#c25c3c;"></div></div>
+                    <div style="width:150px; flex:none; text-align:right; font-size:13.5px; font-weight:700; color:#1b242a; font-variant-numeric:tabular-nums;">{{ lc.ganhoTxt }}</div>
+                    <div onClick="{{ lc.onAdd }}" style="font-size:11.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#fff; background:#c25c3c; cursor:pointer; padding:7px 12px; border-radius:4px; flex:none;">+ Simular</div>
                   </div>
-                  <div style="flex:1; height:16px; background:#ece6d9; border-radius:3px; overflow:hidden;"><div style="width:{{ rk.barW }}; height:100%; background:#c25c3c;"></div></div>
-                  <div style="width:120px; flex:none; text-align:right; font-size:13.5px; font-weight:700; color:#1b242a; font-variant-numeric:tabular-nums;">{{ rk.ganhoTxt }}</div>
-                  <div onClick="{{ rk.onAdd }}" style="font-size:11.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#fff; background:#c25c3c; cursor:pointer; padding:7px 12px; border-radius:4px; flex:none;">+ Simular</div>
-                </div>
-              </sc-for>
-            </div>
-            <sc-if value="{{ simRankVazio }}" hint-placeholder-val="{{ false }}">
-              <div style="font-size:13.5px; color:#8a857c; margin-top:14px;">Nenhum local candidato reduz o tempo abaixo do tempo-alvo ({{ simXAmbosTxt }}) para as crianças descobertas — considere um tempo-alvo maior ou a construção de unidade em novo ponto do território.</div>
+                </sc-for>
+              </div>
+              <div style="display:flex; gap:16px; align-items:center; margin-top:16px; flex-wrap:wrap;">
+                <div onClick="{{ simAdotarTodos }}" style="font-size:11.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#c25c3c; cursor:pointer; padding:9px 16px; border:1px solid #e6cfc5; border-radius:4px;">Adicionar todos à simulação</div>
+                <div style="font-size:12.5px; color:#8a857c;">{{ simPlanoRestTxt }}</div>
+              </div>
             </sc-if>
           </div>
         </sc-if>
 
-        <div style="font-size:11.5px; color:#a39c90; margin-top:30px; line-height:1.55; max-width:760px;">Metodologia: cada ponto do mapa é um quadrado da malha estatística (≈1 km²) com crianças estimadas pela divisão da população do setor censitário entre seus quadrados (idêntica à Análise 1). <strong style="color:#7a7468;">Caminhável</strong> usa a menor distância roteada (OSM) até escola pública com a etapa, comparada ao raio do cenário; <strong style="color:#7a7468;">Só transporte / Sem acesso</strong> usam o menor tempo roteado comparado ao threshold empírico da Análise 2 (percentil selecionado). A nova escola simulada é ancorada em um local de escola existente para usar rotas reais — não há estimativa em linha reta.</div>
+        <div style="font-size:11.5px; color:#a39c90; margin-top:30px; line-height:1.55; max-width:760px;">Metodologia: cada ponto do mapa é um quadrado da malha estatística (≈1 km²) com crianças estimadas pela divisão da população do setor censitário entre seus quadrados (idêntica à Análise 1). <strong style="color:#7a7468;">Caminhável</strong> usa a menor distância roteada (OSM) até escola pública com a etapa, comparada ao raio do cenário; <strong style="color:#7a7468;">Só transporte / Sem acesso</strong> usam o menor tempo roteado comparado ao threshold empírico da Análise 2 (percentil selecionado). A nova escola simulada é posicionada em um quadrado da malha (inclusive onde não existe escola). Tempos e distâncias até ela são estimados encadeando duas rotas OSM reais (quadrado→escola→quadrado), sem linha reta; a estimativa é um teto, que superestima sobretudo em áreas urbanas — as recomendações erram para o lado conservador. A malha do IBGE cobre apenas áreas habitadas, exatamente onde faz sentido construir.</div>
       </sc-if>
 
       <sc-if value="{{ simIndisponivel }}" hint-placeholder-val="{{ false }}">
@@ -682,7 +691,7 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1340,&quot;height&quot;:900}}">
 class Component extends DCLogic {
-  state = { page:'escolas', fase:'Daycare', cenario:'C2', percentil:'p90', municipio:'Abaiara', tab:'mapa', mapVar:'delta_sem_acesso', escVar:'matriculas', infoOpen:false, percentilInfoOpen:false, geo:null, detalhe:null, hover:null, simTab:'simular', simSel:[], simData:null, simLoading:false, simXU:null, simXR:null, simEscopo:'ambos', simHover:null };
+  state = { page:'escolas', fase:'Daycare', cenario:'C2', percentil:'p90', municipio:'Abaiara', tab:'mapa', mapVar:'delta_sem_acesso', escVar:'matriculas', infoOpen:false, percentilInfoOpen:false, geo:null, detalhe:null, hover:null, simTab:'simular', simSel:[], simData:null, simLoading:false, simXU:null, simXR:null, simEscopo:'ambos', simGreedyRes:null, simHover:null };
 
   componentDidMount(){
     if(window.CEARA){ this.setState({geo:window.CEARA}); }
@@ -712,7 +721,7 @@ class Component extends DCLogic {
     const SI=window.SIM_INDEX; if(!SI) return;
     const rec=SI.munis.find(m=>m.n===nome)||SI.munis[0];
     if(this.state.simData && this.state.simData.cd===rec.cd) return;
-    this.setState({simLoading:true, simSel:[], simHover:null});
+    this.setState({simLoading:true, simSel:[], simGreedyRes:null, simHover:null});
     fetch('sim_data/mun_'+rec.cd+'.json').then(r=>r.ok?r.json():null).then(d=>{
       if(d){ this._sim=null; this._simRes=null; this._simDots=null; this._simRank=null; this.setState({simData:d, simLoading:false}); }
       else this.setState({simLoading:false});
@@ -737,7 +746,7 @@ class Component extends DCLogic {
     const D=sim.data, sel=this.state.simSel;
     const nQ=D.quads.length, nP=D.pares.length;
     const bestD=new Float64Array(nQ).fill(Infinity), bestT=new Float64Array(nQ).fill(Infinity);
-    for(const ei of sel){ for(const [q,d,t] of sim.routesByEsc[ei]){ if(d<bestD[q])bestD[q]=d; if(t<bestT[q])bestT[q]=t; } }
+    for(const b of sel){ const cc=this.simConcatQuad(sim,b); for(let q=0;q<nQ;q++){ if(cc.dQ[q]<bestD[q])bestD[q]=cc.dQ[q]; if(cc.tQ[q]<bestT[q])bestT[q]=cc.tQ[q]; } }
     const novoD=new Float64Array(nP), novoT=new Float64Array(nP);
     const clA=new Int8Array(nP), clB=new Int8Array(nP);
     let tot=0, sTA=0,sTB=0,sDA=0,sDB=0;
@@ -794,26 +803,90 @@ class Component extends DCLogic {
     this._simDots={key, dots, cand, ofer, r};
     return this._simDots;
   }
-  simRankBuild(sim,I,R,XU,XR,key){
-    if(this._simRank && this._simRank.key===key) return this._simRank;
-    const D=sim.data, esc=this.state.simEscopo;
-    const rank=[];
-    D.esc.forEach((e,ei)=>{
-      let g=0;
-      for(const [q,d,t] of sim.routesByEsc[ei]){
-        for(const pi of sim.paresByQuad[q]){
-          const p=D.pares[pi], c=p[I.c];
-          const urb=p[1]===1;
-          if(urb ? esc==='rural' : esc==='urbano') continue;
-          const X=urb?XU:XR;
-          if(c>0 && t<=X && R.clB[pi]>=0 && R.novoT[pi]>X) g+=c;
+  simConcatQuad(sim,b){
+    // tempos/distâncias do quadrado b aos demais, encadeando duas rotas OSM reais (quadrado→escola→quadrado)
+    const nQ=sim.data.quads.length;
+    const dQ=new Float64Array(nQ).fill(Infinity), tQ=new Float64Array(nQ).fill(Infinity);
+    dQ[b]=0; tQ[b]=0;
+    for(const [e,dB,tB] of sim.routesByQuad[b]){
+      for(const [a,dA,tA] of sim.routesByEsc[e]){
+        const dd=dA+dB, tt=tA+tB;
+        if(dd<dQ[a])dQ[a]=dd;
+        if(tt<tQ[a])tQ[a]=tt;
+      }
+    }
+    return {dQ,tQ};
+  }
+  simRodarGreedy(){
+    const S=this.state, SI=window.SIM_INDEX, D=S.simData;
+    if(!SI||!D) return;
+    const sim=this.simEnsure(D);
+    const isCre=this.fk()==='D';
+    const I=isCre?{c:2,d:3,t:4}:{c:5,d:6,t:7};
+    const P=SI.parametros, fkey=isCre?'creche':'pre_escola', cen=P.cenarios[S.cenario];
+    const T={wU:cen.caminhavel_urb_km, wR:cen.caminhavel_rur_km,
+      tU:P.tempos_recomendados_min[fkey].urbana[S.percentil],
+      tR:P.tempos_recomendados_min[fkey].rural[S.percentil]};
+    const XU=S.simXU!=null?S.simXU:Math.round(T.tU*10)/10;
+    const XR=S.simXR!=null?S.simXR:Math.round(T.tR*10)/10;
+    const selKey=S.simSel.slice().sort((a,b)=>a-b).join('_');
+    const R=this.simCompute(sim,I,T,[D.cd,this.fk(),S.cenario,S.percentil,selKey].join('|'));
+    // pares descobertos no escopo, agrupados por quadrado
+    const uncByQuad=new Map(); let totalDesc=0;
+    D.pares.forEach((p,i)=>{
+      if(R.clB[i]<0) return;
+      const c=p[I.c]; if(!(c>0)) return;
+      const urb=p[1]===1;
+      if(urb ? S.simEscopo==='rural' : S.simEscopo==='urbano') return;
+      const X=urb?XU:XR;
+      if(R.novoT[i]<=X) return;
+      totalDesc+=c;
+      if(!uncByQuad.has(p[0])) uncByQuad.set(p[0],[]);
+      uncByQuad.get(p[0]).push([i,X,c]);
+    });
+    const cobertos=new Uint8Array(D.pares.length);
+    const tempoAte=b=>{
+      const minT=new Map(); minT.set(b,0);
+      for(const [e,dB,tB] of sim.routesByQuad[b]){
+        for(const [a,dA,tA] of sim.routesByEsc[e]){
+          if(!uncByQuad.has(a)) continue;
+          const tt=tA+tB, cur=minT.get(a);
+          if(cur===undefined||tt<cur) minT.set(a,tt);
         }
       }
-      if(g>0.05) rank.push([ei,g]);
-    });
-    rank.sort((a,b)=>b[1]-a[1]);
-    this._simRank={key, rank:rank.slice(0,12)};
-    return this._simRank;
+      return minT;
+    };
+    const ganhoDe=b=>{
+      let g=0;
+      for(const [a,t] of tempoAte(b)){
+        const lst=uncByQuad.get(a); if(!lst) continue;
+        for(const u of lst){ if(!cobertos[u[0]] && t<=u[1]) g+=u[2]; }
+      }
+      return g;
+    };
+    // guloso preguiçoso: o ganho de cada candidato só diminui conforme pares são cobertos
+    let fila=[];
+    for(let b=0;b<D.quads.length;b++){ const g=ganhoDe(b); if(g>0.05) fila.push([g,b]); }
+    fila.sort((a,b)=>b[0]-a[0]);
+    const locais=[]; let acum=0;
+    while(fila.length && locais.length<40){
+      const par=fila.shift(); const b=par[1];
+      const g=ganhoDe(b);
+      if(fila.length && g<fila[0][0]-1e-9){
+        if(g>0.05){ let lo=0,hi=fila.length; while(lo<hi){ const m=(lo+hi)>>1; if(fila[m][0]>g)lo=m+1; else hi=m; } fila.splice(lo,0,[g,b]); }
+        continue;
+      }
+      if(g<=0.05) break;
+      for(const [a,t] of tempoAte(b)){
+        const lst=uncByQuad.get(a); if(!lst) continue;
+        for(const u of lst){ if(!cobertos[u[0]] && t<=u[1]) cobertos[u[0]]=1; }
+      }
+      acum+=g;
+      let kidsLocal=0;
+      for(const pi of sim.paresByQuad[b]){ const c=D.pares[pi][I.c]; if(c>0) kidsLocal+=c; }
+      locais.push({q:b, g, acum, kidsLocal});
+    }
+    this.setState({simGreedyRes:{municipio:S.municipio, fase:S.fase, escopo:S.simEscopo, xu:XU, xr:XR, totalDesc, acum, locais, cap:(locais.length>=40 && fila.length>0)}});
   }
   simSvgXY(e){
     let svg=e.currentTarget;
@@ -862,7 +935,7 @@ class Component extends DCLogic {
       sDepCam:'0.0', sDepTr:'0.0', sDepSem:'0.0', sDepCamN:'0', sDepTrN:'0', sDepSemN:'0',
       sAntWCam:'0%', sAntWTr:'0%', sAntWSem:'0%', sDepWCam:'0%', sDepWTr:'0%', sDepWSem:'0%',
       sAntTempo:'0.0', sAntDist:'0.0', sDepTempo:'0.0', sDepDist:'0.0', sGanhoCam:'0', sGanhoSem:'0',
-      sSelCountTxt:'', simTemSel:false, simSelList:[], simRank:[], simRankVazio:false, simDescTxt:'',
+      sSelCountTxt:'', simTemSel:false, simSelList:[], simDescTxt:'', simTemPlano:false, simLocais:[], simPlanMarkers:[], simPlanoResumo:'', simPlanoRestTxt:'', simCalcular:()=>{}, simAdotarTodos:()=>{},
       simLegendTitulo:'classificação simulada', simLeg1Cor:'#3f6b4e', simLeg1Txt:'Caminhável — dentro do raio a pé',
       simLeg2Cor:'#c79a3f', simLeg2Txt:'Só transporte — tempo dentro do threshold',
       simLeg3Cor:'#b14a36', simLeg3Txt:'Sem acesso — acima do threshold de tempo' });
@@ -909,12 +982,12 @@ class Component extends DCLogic {
       v.simLeg3Cor='#b14a36'; v.simLeg3Txt='Acima do tempo-alvo — descoberta';
       v.simFill1='#9db8a0';
     }
-    v.simSelMarkers=S.simSel.map(ei=>({cx:D.esc[ei][0].toFixed(2), cy:D.esc[ei][1].toFixed(2), r:(dots.r*1.8).toFixed(2), sw:(dots.r*0.55).toFixed(2)}));
+    v.simSelMarkers=S.simSel.map(b=>({cx:D.quads[b][0].toFixed(2), cy:D.quads[b][1].toFixed(2), r:(dots.r*1.8).toFixed(2), sw:(dots.r*0.55).toFixed(2)}));
 
     v.simMapClick=e=>{
       const pt=this.simSvgXY(e); if(!pt) return;
       const rr=Math.max(sim.vb[2],sim.vb[3])/30; let best=-1,bd=rr*rr;
-      D.esc.forEach((es,ei)=>{ const dx=es[0]-pt[0],dy=es[1]-pt[1],dd=dx*dx+dy*dy; if(dd<bd){bd=dd;best=ei;} });
+      for(let q=0;q<D.quads.length;q++){ const dx=D.quads[q][0]-pt[0],dy=D.quads[q][1]-pt[1],dd=dx*dx+dy*dy; if(dd<bd){bd=dd;best=q;} }
       if(best<0) return;
       this.setState(s=>({ simSel: s.simSel.includes(best)? s.simSel.filter(x=>x!==best) : s.simSel.concat([best]) }));
     };
@@ -953,20 +1026,19 @@ class Component extends DCLogic {
     v.sGanhoCam=fmtN(Math.max(0,R.depois[0]-R.antes[0])); v.sGanhoSem=fmtN(Math.max(0,R.antes[2]-R.depois[2]));
     v.sSelCountTxt=S.simSel.length? (S.simSel.length+(S.simSel.length===1?' nova oferta simulada':' novas ofertas simuladas')) : 'clique no mapa para adicionar';
     v.simTemSel=S.simSel.length>0;
-    v.simSelList=S.simSel.map(ei=>{
-      const e=D.esc[ei];
-      let kids=0;
-      for(const [q,dq] of sim.routesByEsc[ei]){
-        for(const pi of sim.paresByQuad[q]){
-          const p=D.pares[pi], c=p[I.c];
-          if(c>0 && dq<=(p[1]===1?T.wU:T.wR)) kids+=c;
-        }
+    v.simSelList=S.simSel.map((b,ix)=>{
+      const cc=this.simConcatQuad(sim,b);
+      let kidsWalk=0, kidsLocal=0;
+      for(let i=0;i<D.pares.length;i++){
+        const p=D.pares[i], c=p[I.c];
+        if(!(c>0)) continue;
+        if(p[0]===b) kidsLocal+=c;
+        if(cc.dQ[p[0]]<=(p[1]===1?T.wU:T.wR)) kidsWalk+=c;
       }
-      const jaOferta=(isCre?e[3]:e[4])===1;
-      return { nome:e[5],
-        tipo:(e[2]===1?'Escola pública ativa':'Local candidato (escola privada ou inativa)')+(jaOferta?' · já oferta a etapa':' · sem a etapa hoje'),
-        kidsTxt:this.fmtKids(kids)+' crianças no raio caminhável',
-        onRemove:()=>this.setState(s=>({simSel:s.simSel.filter(x=>x!==ei)})) };
+      return { nome:'Local simulado '+(ix+1)+' — quadrado da malha',
+        tipo:'≈'+this.fmtKids(kidsLocal)+' crianças moram no quadrado',
+        kidsTxt:'~'+this.fmtKids(kidsWalk)+' crianças no raio caminhável',
+        onRemove:()=>this.setState(s=>({simSel:s.simSel.filter(x=>x!==b)})) };
     });
 
     if(S.simTab==='onde'){
@@ -987,16 +1059,26 @@ class Component extends DCLogic {
       else if(S.simEscopo==='rural') detalhe=' em setores rurais (> '+f1(XR)+' min)';
       else detalhe=' — '+fmtN(descU)+' em setores urbanos (> '+f1(XU)+' min) e '+fmtN(descR)+' em setores rurais (> '+f1(XR)+' min)';
       v.simDescTxt=fmtN(desc)+' de '+fmtN(totEscopo)+' crianças do escopo ('+pctEscopo.toFixed(1)+'%) estão hoje acima do tempo-alvo'+detalhe+(S.simSel.length?' — já considerando as novas escolas simuladas':'')+'.';
-      const rk=this.simRankBuild(sim,I,R,XU,XR,key+'|'+XU+'|'+XR+'|'+S.simEscopo);
-      const gmax=rk.rank.length? rk.rank[0][1] : 1;
-      v.simRank=rk.rank.map(([ei,gn],i)=>{
-        const e=D.esc[ei];
-        return { num:String(i+1).padStart(2,'0'), nome:e[5],
-          tipo:(e[2]===1?'Escola pública ativa':'Escola privada ou inativa — local candidato')+(((isCre?e[3]:e[4])===1)?' · já oferta a etapa':' · sem a etapa hoje'),
-          barW:(gn/gmax*100).toFixed(1)+'%', ganhoTxt:'+'+this.fmtKids(gn)+' crianças',
-          onAdd:()=>this.setState(s=>({ simSel:s.simSel.includes(ei)?s.simSel:s.simSel.concat([ei]), simTab:'simular' })) };
-      });
-      v.simRankVazio=v.simRank.length===0;
+      v.simCalcular=()=>this.simRodarGreedy();
+      const G=S.simGreedyRes;
+      if(G && G.municipio===S.municipio && G.fase===S.fase){
+        v.simTemPlano=true;
+        const pctG=G.totalDesc? (G.acum/G.totalDesc*100):0;
+        v.simPlanoResumo=(G.locais.length||'Nenhum')+(G.locais.length===1?' local cobre ':' locais cobrem ')+fmtN(G.acum)+' de '+fmtN(G.totalDesc)+' crianças descobertas ('+pctG.toFixed(1)+'%), no tempo-alvo de '+f1(G.xu)+' min urbano · '+f1(G.xr)+' min rural usado no cálculo.';
+        const rest=G.totalDesc-G.acum;
+        v.simPlanoRestTxt=rest>0.5? (G.cap? (fmtN(rest)+' crianças restantes: o cálculo é limitado a 40 locais por vez — adicione estes à simulação e recalcule, ou aumente o tempo-alvo.') : (fmtN(rest)+' crianças seguem sem cobertura possível pela estimativa de rotas — candidatas a diagnóstico local.')):'Todas as crianças descobertas alcançáveis foram cobertas.';
+        const gmax=G.locais.length? G.locais[0].g:1;
+        v.simLocais=G.locais.map((L,i)=>({
+          num:String(i+1).padStart(2,'0'),
+          nome:'Local '+(i+1)+' — quadrado da malha',
+          tipo:'≈'+this.fmtKids(L.kidsLocal)+' crianças moram no quadrado',
+          barW:(L.g/gmax*100).toFixed(1)+'%',
+          ganhoTxt:'+'+this.fmtKids(L.g)+' crianças',
+          onAdd:()=>this.setState(s=>({ simSel:s.simSel.includes(L.q)?s.simSel:s.simSel.concat([L.q]), simTab:'simular' })),
+        }));
+        v.simAdotarTodos=()=>this.setState(s=>({ simSel:[...new Set(s.simSel.concat(G.locais.map(L=>L.q)))] }));
+        v.simPlanMarkers=G.locais.filter(L=>!S.simSel.includes(L.q)).map(L=>({cx:D.quads[L.q][0].toFixed(2), cy:D.quads[L.q][1].toFixed(2), r:(dots.r*1.8).toFixed(2), sw:(dots.r*0.5).toFixed(2)}));
+      }
     }
   }
 
