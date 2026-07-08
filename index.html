@@ -458,10 +458,40 @@
       <sc-if value="{{ simReady }}" hint-placeholder-val="{{ true }}">
 
         <sc-if value="{{ isSimTabOnde }}" hint-placeholder-val="{{ false }}">
-          <div style="display:flex; gap:26px; align-items:center; flex-wrap:wrap; margin-top:22px; padding:16px 22px; background:#fff; border:1px solid #e2dccf; border-radius:6px;">
-            <div style="font-size:12.5px; font-weight:700; color:#1b242a; white-space:nowrap;">Se eu quero que o tempo até a escola seja no máximo</div>
-            <input type="range" min="1" max="30" step="0.5" value="{{ simX }}" onInput="{{ onSimX }}" style="flex:1; min-width:160px; accent-color:#c25c3c;">
-            <div style="font-family:'Archivo',sans-serif; font-weight:800; font-size:26px; color:#c25c3c; min-width:96px; text-align:right;">{{ simXTxt }} min</div>
+          <div style="margin-top:22px; padding:18px 22px; background:#fff; border:1px solid #e2dccf; border-radius:6px;">
+            <div style="display:flex; align-items:baseline; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:14px;">
+              <div style="font-size:13px; font-weight:700; color:#1b242a;">Se eu quero que o tempo até a escola seja no máximo…</div>
+              <div onClick="{{ simResetX }}" style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:{{ simResetCor }}; cursor:pointer;">{{ simResetTxt }}</div>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px; flex-wrap:wrap;">
+              <div style="font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:#8a857c;">Analisar setores</div>
+              <div style="display:flex; border:1px solid #d8d0c2; border-radius:5px; overflow:hidden;">
+                <div onClick="{{ simEscopoUrb }}" style="font-family:'Archivo',sans-serif; font-size:12px; font-weight:700; letter-spacing:.03em; padding:8px 16px; cursor:pointer; background:{{ escopoUrbBg }}; color:{{ escopoUrbCor }};">Urbanos</div>
+                <div onClick="{{ simEscopoRur }}" style="font-family:'Archivo',sans-serif; font-size:12px; font-weight:700; letter-spacing:.03em; padding:8px 16px; cursor:pointer; border-left:1px solid #d8d0c2; background:{{ escopoRurBg }}; color:{{ escopoRurCor }};">Rurais</div>
+                <div onClick="{{ simEscopoAmbos }}" style="font-family:'Archivo',sans-serif; font-size:12px; font-weight:700; letter-spacing:.03em; padding:8px 16px; cursor:pointer; border-left:1px solid #d8d0c2; background:{{ escopoAmbosBg }}; color:{{ escopoAmbosCor }};">Ambos</div>
+              </div>
+            </div>
+            <div style="display:flex; gap:34px; flex-wrap:wrap;">
+              <sc-if value="{{ simTemUrb }}" hint-placeholder-val="{{ true }}">
+                <div style="flex:1; min-width:250px;">
+                  <div style="display:flex; align-items:center; gap:14px;">
+                    <div style="font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:#8a857c; width:112px; flex:none;">Setores urbanos</div>
+                    <input type="range" min="1" max="40" step="0.1" value="{{ simXU }}" onInput="{{ onSimXU }}" style="flex:1; accent-color:#c25c3c;">
+                    <div style="font-family:'Archivo',sans-serif; font-weight:800; font-size:22px; color:#c25c3c; min-width:88px; text-align:right;">{{ simXUTxt }} min</div>
+                  </div>
+                </div>
+              </sc-if>
+              <sc-if value="{{ simTemRur }}" hint-placeholder-val="{{ true }}">
+                <div style="flex:1; min-width:250px;">
+                  <div style="display:flex; align-items:center; gap:14px;">
+                    <div style="font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:#8a857c; width:112px; flex:none;">Setores rurais</div>
+                    <input type="range" min="1" max="40" step="0.1" value="{{ simXR }}" onInput="{{ onSimXR }}" style="flex:1; accent-color:#c25c3c;">
+                    <div style="font-family:'Archivo',sans-serif; font-weight:800; font-size:22px; color:#c25c3c; min-width:88px; text-align:right;">{{ simXRTxt }} min</div>
+                  </div>
+                </div>
+              </sc-if>
+            </div>
+            <div style="font-size:11.5px; color:#9a958c; margin-top:12px; line-height:1.5;">Cada criança é avaliada contra o tempo-alvo da situação (urbana ou rural) do setor onde mora — mesma lógica urbano/rural das Análises 1 e 2. Setores fora do escopo selecionado ficam cinza no mapa e fora da contagem e do ranking. Os valores iniciais são os thresholds empíricos da Análise 2 para a etapa e o percentil selecionados.</div>
           </div>
           <div style="font-size:13.5px; color:#5a6066; margin-top:12px;">{{ simDescTxt }}</div>
         </sc-if>
@@ -565,7 +595,7 @@
         <sc-if value="{{ isSimTabOnde }}" hint-placeholder-val="{{ false }}">
           <div style="margin-top:30px;">
             <div style="font-family:'Archivo',sans-serif; font-weight:700; font-size:16px; color:#1b242a; margin-bottom:4px; letter-spacing:-.01em;">Onde abrir a oferta rende mais?</div>
-            <div style="font-size:12.5px; color:#9a958c; margin-bottom:16px; max-width:720px; line-height:1.5;">Locais candidatos ordenados por quantas crianças hoje acima de {{ simXTxt }} min passariam a ficar dentro desse tempo se a etapa fosse ofertada ali — calculado com as rotas OSM reais. Clique em “+ Simular” para adicionar o local à simulação.</div>
+            <div style="font-size:12.5px; color:#9a958c; margin-bottom:16px; max-width:720px; line-height:1.5;">Locais candidatos ordenados por quantas crianças hoje acima do tempo-alvo ({{ simXAmbosTxt }}) passariam a ficar dentro dele se a etapa fosse ofertada ali — calculado com as rotas OSM reais, respeitando a situação urbana/rural de cada setor. Clique em “+ Simular” para adicionar o local à simulação.</div>
             <div style="display:flex; flex-direction:column; max-width:920px;">
               <sc-for list="{{ simRank }}" as="rk" hint-placeholder-count="5">
                 <div style="display:flex; align-items:center; gap:16px; padding:10px 0; border-bottom:1px solid #ebe5d8;">
@@ -581,7 +611,7 @@
               </sc-for>
             </div>
             <sc-if value="{{ simRankVazio }}" hint-placeholder-val="{{ false }}">
-              <div style="font-size:13.5px; color:#8a857c; margin-top:14px;">Nenhum local candidato reduz o tempo abaixo de {{ simXTxt }} min para as crianças descobertas — considere um tempo-alvo maior ou a construção de unidade em novo ponto do território.</div>
+              <div style="font-size:13.5px; color:#8a857c; margin-top:14px;">Nenhum local candidato reduz o tempo abaixo do tempo-alvo ({{ simXAmbosTxt }}) para as crianças descobertas — considere um tempo-alvo maior ou a construção de unidade em novo ponto do território.</div>
             </sc-if>
           </div>
         </sc-if>
@@ -648,7 +678,7 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1340,&quot;height&quot;:900}}">
 class Component extends DCLogic {
-  state = { page:'escolas', fase:'Daycare', cenario:'C2', percentil:'p90', municipio:'Abaiara', tab:'mapa', mapVar:'delta_sem_acesso', escVar:'matriculas', infoOpen:false, percentilInfoOpen:false, geo:null, detalhe:null, hover:null, simTab:'simular', simSel:[], simData:null, simLoading:false, simX:15, simHover:null };
+  state = { page:'escolas', fase:'Daycare', cenario:'C2', percentil:'p90', municipio:'Abaiara', tab:'mapa', mapVar:'delta_sem_acesso', escVar:'matriculas', infoOpen:false, percentilInfoOpen:false, geo:null, detalhe:null, hover:null, simTab:'simular', simSel:[], simData:null, simLoading:false, simXU:null, simXR:null, simEscopo:'ambos', simHover:null };
 
   componentDidMount(){
     if(window.CEARA){ this.setState({geo:window.CEARA}); }
@@ -723,7 +753,7 @@ class Component extends DCLogic {
       tempoA:tot?sTA/tot:0, tempoB:tot?sTB/tot:0, distA:tot?sDA/tot:0, distB:tot?sDB/tot:0};
     return this._simRes;
   }
-  simDotsBuild(sim,I,R,key){
+  simDotsBuild(sim,I,R,XU,XR,key){
     if(this._simDots && this._simDots.key===key) return this._simDots;
     const D=sim.data, S=this.state;
     const r=Math.max(sim.vb[2],sim.vb[3])/250;
@@ -731,18 +761,23 @@ class Component extends DCLogic {
     const circ=(x,y,rr)=>'M'+f(x-rr)+' '+f(y)+'a'+f(rr)+' '+f(rr)+' 0 1 0 '+f(2*rr)+' 0a'+f(rr)+' '+f(rr)+' 0 1 0 '+f(-2*rr)+' 0';
     const dots=['','','',''];
     for(let q=0;q<D.quads.length;q++){
-      let any=false, temC=false, hot=false;
+      let any=false, temC=false, temCEscopo=false, hot=false;
       const soma=[0,0,0];
       for(const pi of sim.paresByQuad[q]){
         if(R.clB[pi]<0) continue;
         any=true;
-        const c=D.pares[pi][I.c];
-        if(c>0){ temC=true; soma[R.clB[pi]]+=c; if(R.novoT[pi]>S.simX) hot=true; }
+        const p=D.pares[pi], c=p[I.c];
+        if(c>0){
+          temC=true; soma[R.clB[pi]]+=c;
+          const urb=p[1]===1;
+          const noEscopo = urb ? S.simEscopo!=='rural' : S.simEscopo!=='urbano';
+          if(noEscopo){ temCEscopo=true; if(R.novoT[pi]>(urb?XU:XR)) hot=true; }
+        }
       }
       if(!any) continue;
       let slot;
       if(!temC) slot=0;
-      else if(S.simTab==='onde') slot=hot?3:1;
+      else if(S.simTab==='onde') slot = temCEscopo ? (hot?3:1) : 2;
       else slot=(soma[2]>=soma[1]&&soma[2]>=soma[0])?3:((soma[1]>=soma[0])?2:1);
       dots[slot]+=circ(D.quads[q][0], D.quads[q][1], r);
     }
@@ -755,17 +790,19 @@ class Component extends DCLogic {
     this._simDots={key, dots, cand, ofer, r};
     return this._simDots;
   }
-  simRankBuild(sim,I,R,X,key){
+  simRankBuild(sim,I,R,XU,XR,key){
     if(this._simRank && this._simRank.key===key) return this._simRank;
-    const D=sim.data;
+    const D=sim.data, esc=this.state.simEscopo;
     const rank=[];
     D.esc.forEach((e,ei)=>{
       let g=0;
       for(const [q,d,t] of sim.routesByEsc[ei]){
-        if(t>X) continue;
         for(const pi of sim.paresByQuad[q]){
-          const c=D.pares[pi][I.c];
-          if(c>0 && R.clB[pi]>=0 && R.novoT[pi]>X) g+=c;
+          const p=D.pares[pi], c=p[I.c];
+          const urb=p[1]===1;
+          if(urb ? esc==='rural' : esc==='urbano') continue;
+          const X=urb?XU:XR;
+          if(c>0 && t<=X && R.clB[pi]>=0 && R.novoT[pi]>X) g+=c;
         }
       }
       if(g>0.05) rank.push([ei,g]);
@@ -799,8 +836,20 @@ class Component extends DCLogic {
     v.simLoading=S.simLoading;
     v.simIndisponivel=!SI;
     v.simReady=!!(SI && S.simData && !S.simLoading);
-    v.simX=S.simX; v.simXTxt=String(S.simX).replace('.',',');
-    v.onSimX=e=>this.setState({simX:parseFloat(e.target.value)});
+    v.onSimXU=e=>this.setState({simXU:parseFloat(e.target.value)});
+    v.onSimXR=e=>this.setState({simXR:parseFloat(e.target.value)});
+    v.simResetX=()=>this.setState({simXU:null, simXR:null});
+    v.simXU='10'; v.simXR='20'; v.simXUTxt='10'; v.simXRTxt='20'; v.simXAmbosTxt='';
+    v.simResetTxt=''; v.simResetCor='#c9c2b4';
+    // escopo do modo inverso: urbano, rural ou ambos
+    v.simEscopoUrb=()=>this.setState({simEscopo:'urbano', simHover:null});
+    v.simEscopoRur=()=>this.setState({simEscopo:'rural', simHover:null});
+    v.simEscopoAmbos=()=>this.setState({simEscopo:'ambos', simHover:null});
+    const escSel=p=>S.simEscopo===p;
+    v.escopoUrbBg=escSel('urbano')?'#c25c3c':'#fff'; v.escopoUrbCor=escSel('urbano')?'#fff':'#5a6066';
+    v.escopoRurBg=escSel('rural')?'#c25c3c':'#fff'; v.escopoRurCor=escSel('rural')?'#fff':'#5a6066';
+    v.escopoAmbosBg=escSel('ambos')?'#c25c3c':'#fff'; v.escopoAmbosCor=escSel('ambos')?'#fff':'#5a6066';
+    v.simTemUrb=S.simEscopo!=='rural'; v.simTemRur=S.simEscopo!=='urbano';
     // defaults (usados enquanto os dados não chegam)
     Object.assign(v,{ simThrTxt:'', simViewBox:'0 0 10 10', simBase:[], simDots0:'', simDots1:'', simDots2:'', simDots3:'',
       simFill0:'#c9c2b4', simFill1:'#3f6b4e', simFill2:'#c79a3f', simFill3:'#b14a36', simEscCand:'', simEscOferta:'',
@@ -827,10 +876,22 @@ class Component extends DCLogic {
     const f1=x=>x.toFixed(1).replace('.',',');
     v.simThrTxt='Caminhável ('+S.cenario+'): até '+f1(T.wU)+' km urbano · '+f1(T.wR)+' km rural. Tempo máximo ('+S.percentil+'): até '+f1(T.tU)+' min urbano · '+f1(T.tR)+' min rural.';
 
+    // tempos-alvo do modo inverso: valor do gestor ou threshold da Analise 2 (urbano/rural)
+    const XU=S.simXU!=null?S.simXU:Math.round(T.tU*10)/10;
+    const XR=S.simXR!=null?S.simXR:Math.round(T.tR*10)/10;
+    v.simXU=String(XU); v.simXR=String(XR);
+    v.simXUTxt=f1(XU); v.simXRTxt=f1(XR);
+    v.simXAmbosTxt = S.simEscopo==='urbano' ? (f1(XU)+' min, setores urbanos')
+      : S.simEscopo==='rural' ? (f1(XR)+' min, setores rurais')
+      : (f1(XU)+' min urbano · '+f1(XR)+' min rural');
+    const usandoPadrao=S.simXU==null&&S.simXR==null;
+    v.simResetTxt=usandoPadrao?('usando thresholds da Análise 2 ('+S.percentil+')'):('voltar aos thresholds da Análise 2 ('+S.percentil+')');
+    v.simResetCor=usandoPadrao?'#9a958c':'#c25c3c';
+
     const selKey=S.simSel.slice().sort((a,b)=>a-b).join('_');
     const key=[D.cd, this.fk(), S.cenario, S.percentil, selKey].join('|');
     const R=this.simCompute(sim,I,T,key);
-    const dots=this.simDotsBuild(sim,I,R,key+'|'+S.simTab+'|'+S.simX);
+    const dots=this.simDotsBuild(sim,I,R,XU,XR,key+'|'+S.simTab+'|'+XU+'|'+XR+'|'+S.simEscopo);
 
     v.simViewBox=sim.vb.map(n=>n.toFixed(2)).join(' ');
     v.simBase = window.CEARA? window.CEARA.munis.map(m=>({d:m.d, fill:m.n===S.municipio?'#f6f0e5':'#e9e2d4', sw:'0.4'})) : [];
@@ -838,10 +899,11 @@ class Component extends DCLogic {
     v.simEscCand=dots.cand; v.simEscOferta=dots.ofer;
     if(S.simTab==='onde'){
       v.simLegendTitulo='cobertura no tempo-alvo';
-      v.simLeg1Cor='#9db8a0'; v.simLeg1Txt='Dentro do tempo-alvo ('+v.simXTxt+' min)';
-      v.simLeg2Cor='#efe9df'; v.simLeg2Txt='';
+      v.simLeg1Cor='#9db8a0'; v.simLeg1Txt='Dentro do tempo-alvo ('+v.simXAmbosTxt+')';
+      if(S.simEscopo==='ambos'){ v.simLeg2Cor='#efe9df'; v.simLeg2Txt=''; v.simFill2='none'; }
+      else { v.simLeg2Cor='#d8d0c2'; v.simLeg2Txt='Fora do escopo ('+(S.simEscopo==='urbano'?'setores rurais':'setores urbanos')+')'; v.simFill2='#d8d0c2'; }
       v.simLeg3Cor='#b14a36'; v.simLeg3Txt='Acima do tempo-alvo — descoberta';
-      v.simFill1='#9db8a0'; v.simFill2='none';
+      v.simFill1='#9db8a0';
     }
     v.simSelMarkers=S.simSel.map(ei=>({cx:D.esc[ei][0].toFixed(2), cy:D.esc[ei][1].toFixed(2), r:(dots.r*1.8).toFixed(2), sw:(dots.r*0.55).toFixed(2)}));
 
@@ -904,13 +966,24 @@ class Component extends DCLogic {
     });
 
     if(S.simTab==='onde'){
-      let desc=0;
+      let descU=0, descR=0, totU=0, totR=0;
       for(let i=0;i<D.pares.length;i++){
-        const c=D.pares[i][I.c];
-        if(c>0 && R.clB[i]>=0 && R.novoT[i]>S.simX) desc+=c;
+        const p=D.pares[i], c=p[I.c];
+        if(c>0 && R.clB[i]>=0){
+          if(p[1]===1){ totU+=c; if(R.novoT[i]>XU) descU+=c; }
+          else { totR+=c; if(R.novoT[i]>XR) descR+=c; }
+        }
       }
-      v.simDescTxt=fmtN(desc)+' de '+fmtN(R.tot)+' crianças ('+pctOf(desc).toFixed(1)+'%) estão hoje a mais de '+v.simXTxt+' min da escola pública mais próxima com a etapa'+(S.simSel.length?' (já considerando as novas escolas simuladas)':'')+'.';
-      const rk=this.simRankBuild(sim,I,R,S.simX,key+'|'+S.simX);
+      const temU=S.simEscopo!=='rural', temR=S.simEscopo!=='urbano';
+      const desc=(temU?descU:0)+(temR?descR:0);
+      const totEscopo=(temU?totU:0)+(temR?totR:0);
+      const pctEscopo=totEscopo? (desc/totEscopo*100):0;
+      let detalhe;
+      if(S.simEscopo==='urbano') detalhe=' em setores urbanos (> '+f1(XU)+' min)';
+      else if(S.simEscopo==='rural') detalhe=' em setores rurais (> '+f1(XR)+' min)';
+      else detalhe=' — '+fmtN(descU)+' em setores urbanos (> '+f1(XU)+' min) e '+fmtN(descR)+' em setores rurais (> '+f1(XR)+' min)';
+      v.simDescTxt=fmtN(desc)+' de '+fmtN(totEscopo)+' crianças do escopo ('+pctEscopo.toFixed(1)+'%) estão hoje acima do tempo-alvo'+detalhe+(S.simSel.length?' — já considerando as novas escolas simuladas':'')+'.';
+      const rk=this.simRankBuild(sim,I,R,XU,XR,key+'|'+XU+'|'+XR+'|'+S.simEscopo);
       const gmax=rk.rank.length? rk.rank[0][1] : 1;
       v.simRank=rk.rank.map(([ei,gn],i)=>{
         const e=D.esc[ei];
