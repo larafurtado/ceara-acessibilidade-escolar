@@ -525,7 +525,7 @@
           <div data-r="legend" style="flex:none; width:220px; display:flex; flex-direction:column; justify-content:center; gap:9px;">
             <div style="font-family:'Archivo',sans-serif; font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#5a6066; margin-bottom:4px;">Legenda · {{ simLegendTitulo }}</div>
             <sc-if value="{{ isSimTabSim }}" hint-placeholder-val="{{ true }}">
-              <div onClick="{{ simToggleClasses }}" style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#c25c3c; cursor:pointer; margin-bottom:6px;">{{ simVerClassesTxt }}</div>
+              <div onClick="{{ simToggleClasses }}" style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#c25c3c; cursor:pointer; padding:10px 0; margin-bottom:2px;">{{ simVerClassesTxt }}</div>
             </sc-if>
             <div style="display:flex; align-items:center; gap:9px;"><span style="width:11px; height:11px; border-radius:50%; background:{{ simLeg1Cor }}; flex:none;"></span><span style="font-size:12px; color:#5a6066;">{{ simLeg1Txt }}</span></div>
             <div style="display:flex; align-items:center; gap:9px;"><span style="width:11px; height:11px; border-radius:50%; background:{{ simLeg2Cor }}; flex:none;"></span><span style="font-size:12px; color:#5a6066;">{{ simLeg2Txt }}</span></div>
@@ -992,14 +992,14 @@ class Component extends DCLogic {
     if(S.simTab!=='onde' && !S.simVerClasses){
       v.simLegendTitulo='malha e escolas';
       v.simLeg1Cor='#efe4d0'; v.simLeg1Txt='Célula habitada da malha do IBGE (~1 km²)';
-      v.simLeg2Cor='#efe9df'; v.simLeg2Txt='';
-      v.simLeg3Cor='#efe9df'; v.simLeg3Txt='';
-      v.simLeg4Cor='#efe9df'; v.simLeg4Txt='';
+      v.simLeg2Cor='transparent'; v.simLeg2Txt='';
+      v.simLeg3Cor='transparent'; v.simLeg3Txt='';
+      v.simLeg4Cor='transparent'; v.simLeg4Txt='';
     }
     if(S.simTab==='onde'){
       v.simLegendTitulo='cobertura no tempo-alvo';
       v.simLeg1Cor='#9db8a0'; v.simLeg1Txt='Dentro do tempo-alvo ('+v.simXAmbosTxt+')';
-      if(S.simEscopo==='ambos'){ v.simLeg2Cor='#efe9df'; v.simLeg2Txt=''; v.simFill2='none'; }
+      if(S.simEscopo==='ambos'){ v.simLeg2Cor='transparent'; v.simLeg2Txt=''; v.simFill2='none'; }
       else { v.simLeg2Cor='#d8d0c2'; v.simLeg2Txt='Fora do escopo ('+(S.simEscopo==='urbano'?'setores rurais':'setores urbanos')+')'; v.simFill2='#d8d0c2'; }
       v.simLeg3Cor='#b14a36'; v.simLeg3Txt='Acima do tempo-alvo — descoberta';
       v.simFill1='#9db8a0';
