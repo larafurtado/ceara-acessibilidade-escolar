@@ -507,6 +507,7 @@
               <sc-for list="{{ simBase }}" as="b" hint-placeholder-count="0">
                 <path d="{{ b.d }}" fill="{{ b.fill }}" stroke="#d8ccb6" stroke-width="{{ b.sw }}"></path>
               </sc-for>
+              <path d="{{ simMalha }}" fill="#f8f2e7" fill-opacity="0.65" stroke="#d8ccb6" stroke-width="0.12"></path>
               <path d="{{ simDots0 }}" fill="{{ simFill0 }}"></path>
               <path d="{{ simDots1 }}" fill="{{ simFill1 }}"></path>
               <path d="{{ simDots2 }}" fill="{{ simFill2 }}"></path>
@@ -523,10 +524,13 @@
           </div>
           <div data-r="legend" style="flex:none; width:220px; display:flex; flex-direction:column; justify-content:center; gap:9px;">
             <div style="font-family:'Archivo',sans-serif; font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#5a6066; margin-bottom:4px;">Legenda · {{ simLegendTitulo }}</div>
+            <sc-if value="{{ isSimTabSim }}" hint-placeholder-val="{{ true }}">
+              <div onClick="{{ simToggleClasses }}" style="font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:#c25c3c; cursor:pointer; margin-bottom:6px;">{{ simVerClassesTxt }}</div>
+            </sc-if>
             <div style="display:flex; align-items:center; gap:9px;"><span style="width:11px; height:11px; border-radius:50%; background:{{ simLeg1Cor }}; flex:none;"></span><span style="font-size:12px; color:#5a6066;">{{ simLeg1Txt }}</span></div>
             <div style="display:flex; align-items:center; gap:9px;"><span style="width:11px; height:11px; border-radius:50%; background:{{ simLeg2Cor }}; flex:none;"></span><span style="font-size:12px; color:#5a6066;">{{ simLeg2Txt }}</span></div>
             <div style="display:flex; align-items:center; gap:9px;"><span style="width:11px; height:11px; border-radius:50%; background:{{ simLeg3Cor }}; flex:none;"></span><span style="font-size:12px; color:#5a6066;">{{ simLeg3Txt }}</span></div>
-            <div style="display:flex; align-items:center; gap:9px;"><span style="width:11px; height:11px; border-radius:50%; background:#c9c2b4; flex:none;"></span><span style="font-size:12px; color:#5a6066;">Sem demanda na etapa</span></div>
+            <div style="display:flex; align-items:center; gap:9px;"><span style="width:11px; height:11px; border-radius:50%; background:{{ simLeg4Cor }}; flex:none;"></span><span style="font-size:12px; color:#5a6066;">{{ simLeg4Txt }}</span></div>
             <div style="border-top:1px solid #e2dccf; margin:6px 0 2px;"></div>
             <div style="display:flex; align-items:center; gap:9px;"><span style="width:9px; height:9px; border-radius:50%; background:#1d2b33; flex:none;"></span><span style="font-size:12px; color:#5a6066;">Escola pública com a etapa hoje</span></div>
             <div style="display:flex; align-items:center; gap:9px;"><span style="width:8px; height:8px; border-radius:50%; background:#7d8f98; flex:none;"></span><span style="font-size:12px; color:#5a6066;">Outras escolas existentes (contexto)</span></div>
@@ -691,7 +695,7 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1340,&quot;height&quot;:900}}">
 class Component extends DCLogic {
-  state = { page:'escolas', fase:'Daycare', cenario:'C2', percentil:'p90', municipio:'Abaiara', tab:'mapa', mapVar:'delta_sem_acesso', escVar:'matriculas', infoOpen:false, percentilInfoOpen:false, geo:null, detalhe:null, hover:null, simTab:'simular', simSel:[], simData:null, simLoading:false, simXU:null, simXR:null, simEscopo:'ambos', simGreedyRes:null, simHover:null };
+  state = { page:'escolas', fase:'Daycare', cenario:'C2', percentil:'p90', municipio:'Abaiara', tab:'mapa', mapVar:'delta_sem_acesso', escVar:'matriculas', infoOpen:false, percentilInfoOpen:false, geo:null, detalhe:null, hover:null, simTab:'simular', simSel:[], simData:null, simLoading:false, simXU:null, simXR:null, simEscopo:'ambos', simGreedyRes:null, simVerClasses:false, simHover:null };
 
   componentDidMount(){
     if(window.CEARA){ this.setState({geo:window.CEARA}); }
@@ -772,8 +776,16 @@ class Component extends DCLogic {
     const r=Math.max(sim.vb[2],sim.vb[3])/250;
     const f=n=>n.toFixed(2);
     const circ=(x,y,rr)=>'M'+f(x-rr)+' '+f(y)+'a'+f(rr)+' '+f(rr)+' 0 1 0 '+f(2*rr)+' 0a'+f(rr)+' '+f(rr)+' 0 1 0 '+f(-2*rr)+' 0';
+    if(!sim.malha){
+      // celulas de 1 km da malha estatistica (1 km ~ 2,16 unidades do canvas estadual)
+      const h=1.08, lado=2.16;
+      let m='';
+      for(const [x,y] of D.quads){ m+='M'+f(x-h)+' '+f(y-h)+'h'+f(lado)+'v'+f(lado)+'h'+f(-lado)+'Z'; }
+      sim.malha=m;
+    }
+    const mostrarClasses = S.simTab==='onde' || S.simVerClasses;
     const dots=['','','',''];
-    for(let q=0;q<D.quads.length;q++){
+    for(let q=0;q<D.quads.length && mostrarClasses;q++){
       let any=false, temC=false, temCEscopo=false, hot=false;
       const soma=[0,0,0];
       for(const pi of sim.paresByQuad[q]){
@@ -800,7 +812,7 @@ class Component extends DCLogic {
       if((isCre?e[3]:e[4])===1) ofer+=circ(e[0],e[1],r*0.8);
       else cand+=circ(e[0],e[1],r*0.58);
     });
-    this._simDots={key, dots, cand, ofer, r};
+    this._simDots={key, dots, cand, ofer, r, malha:sim.malha};
     return this._simDots;
   }
   simConcatQuad(sim,b){
@@ -930,7 +942,7 @@ class Component extends DCLogic {
     // defaults (usados enquanto os dados não chegam)
     Object.assign(v,{ simThrTxt:'', simViewBox:'0 0 10 10', simBase:[], simDots0:'', simDots1:'', simDots2:'', simDots3:'',
       simFill0:'#c9c2b4', simFill1:'#3f6b4e', simFill2:'#c79a3f', simFill3:'#b14a36', simEscCand:'', simEscOferta:'',
-      simSelMarkers:[], simHoverText:'', simHoverBg:'0.45', simMapClick:()=>{}, simMapMove:()=>{}, simMapLeave:()=>{},
+      simSelMarkers:[], simHoverText:'', simHoverBg:'0.45', simMapClick:()=>{}, simMapMove:()=>{}, simMapLeave:()=>{}, simMalha:'', simToggleClasses:()=>{}, simVerClassesTxt:'', simLeg4Cor:'#c9c2b4', simLeg4Txt:'Sem demanda na etapa',
       sAntCam:'0.0', sAntTr:'0.0', sAntSem:'0.0', sAntCamN:'0', sAntTrN:'0', sAntSemN:'0',
       sDepCam:'0.0', sDepTr:'0.0', sDepSem:'0.0', sDepCamN:'0', sDepTrN:'0', sDepSemN:'0',
       sAntWCam:'0%', sAntWTr:'0%', sAntWSem:'0%', sDepWCam:'0%', sDepWTr:'0%', sDepWSem:'0%',
@@ -968,12 +980,22 @@ class Component extends DCLogic {
     const selKey=S.simSel.slice().sort((a,b)=>a-b).join('_');
     const key=[D.cd, this.fk(), S.cenario, S.percentil, selKey].join('|');
     const R=this.simCompute(sim,I,T,key);
-    const dots=this.simDotsBuild(sim,I,R,XU,XR,key+'|'+S.simTab+'|'+XU+'|'+XR+'|'+S.simEscopo);
+    const dots=this.simDotsBuild(sim,I,R,XU,XR,key+'|'+S.simTab+'|'+XU+'|'+XR+'|'+S.simEscopo+'|'+(S.simVerClasses?1:0));
 
     v.simViewBox=sim.vb.map(n=>n.toFixed(2)).join(' ');
     v.simBase = window.CEARA? window.CEARA.munis.map(m=>({d:m.d, fill:m.n===S.municipio?'#f6f0e5':'#e9e2d4', sw:'0.4'})) : [];
     v.simDots0=dots.dots[0]; v.simDots1=dots.dots[1]; v.simDots2=dots.dots[2]; v.simDots3=dots.dots[3];
     v.simEscCand=dots.cand; v.simEscOferta=dots.ofer;
+    v.simMalha=dots.malha;
+    v.simToggleClasses=()=>this.setState(s=>({simVerClasses:!s.simVerClasses}));
+    v.simVerClassesTxt=S.simVerClasses?'· ocultar cores de acesso':'· colorir por acesso';
+    if(S.simTab!=='onde' && !S.simVerClasses){
+      v.simLegendTitulo='malha e escolas';
+      v.simLeg1Cor='#efe4d0'; v.simLeg1Txt='Célula habitada da malha do IBGE (~1 km²)';
+      v.simLeg2Cor='#efe9df'; v.simLeg2Txt='';
+      v.simLeg3Cor='#efe9df'; v.simLeg3Txt='';
+      v.simLeg4Cor='#efe9df'; v.simLeg4Txt='';
+    }
     if(S.simTab==='onde'){
       v.simLegendTitulo='cobertura no tempo-alvo';
       v.simLeg1Cor='#9db8a0'; v.simLeg1Txt='Dentro do tempo-alvo ('+v.simXAmbosTxt+')';
