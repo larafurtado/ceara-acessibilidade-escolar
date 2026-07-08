@@ -502,8 +502,13 @@
 
         <div data-r="maprow" style="display:flex; gap:30px; align-items:stretch; margin-top:22px;">
           <div style="flex:1; min-width:0; background:#efe9df; border:1px solid #e0d8ca; border-radius:6px; padding:14px 18px; position:relative;">
-            <div style="position:absolute; top:18px; left:22px; z-index:2; background:rgba(29,43,51,{{ simHoverBg }}); color:#f2f4f3; font-size:12.5px; font-weight:600; padding:7px 13px; border-radius:4px; max-width:72%; pointer-events:none;">{{ simHoverText }}</div>
-            <svg viewBox="{{ simViewBox }}" data-r="map" onClick="{{ simMapClick }}" onMouseMove="{{ simMapMove }}" onMouseOut="{{ simMapLeave }}" style="width:100%; height:620px; display:block; cursor:crosshair;">
+            <div style="position:absolute; top:18px; left:22px; z-index:2; background:rgba(29,43,51,{{ simHoverBg }}); color:#f2f4f3; font-size:12.5px; font-weight:600; padding:7px 13px; border-radius:4px; max-width:60%; pointer-events:none;">{{ simHoverText }}</div>
+            <div style="position:absolute; top:18px; right:22px; z-index:2; display:flex; flex-direction:column; gap:7px;">
+              <div onClick="{{ simZoomIn }}" style="width:40px; height:40px; border-radius:7px; background:#fff; border:1px solid #d8d0c2; box-shadow:0 4px 10px -6px rgba(40,30,20,.4); display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:700; color:#1b242a; cursor:pointer; user-select:none;">+</div>
+              <div onClick="{{ simZoomOut }}" style="width:40px; height:40px; border-radius:7px; background:#fff; border:1px solid #d8d0c2; box-shadow:0 4px 10px -6px rgba(40,30,20,.4); display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:700; color:#1b242a; cursor:pointer; user-select:none;">−</div>
+              <div onClick="{{ simZoomReset }}" style="width:40px; height:40px; border-radius:7px; background:#fff; border:1px solid #d8d0c2; box-shadow:0 4px 10px -6px rgba(40,30,20,.4); display:flex; align-items:center; justify-content:center; font-size:17px; font-weight:700; color:#1b242a; cursor:pointer; user-select:none;">⟲</div>
+            </div>
+            <svg viewBox="{{ simViewBox }}" data-r="map" onClick="{{ simMapClick }}" onMouseMove="{{ simMapMove }}" onMouseOut="{{ simMapLeave }}" onPointerDown="{{ simPD }}" onPointerMove="{{ simPM }}" onPointerUp="{{ simPU }}" onPointerCancel="{{ simPU }}" onWheel="{{ simWheel }}" style="width:100%; height:620px; display:block; cursor:crosshair; touch-action:pan-y;">
               <sc-for list="{{ simBase }}" as="b" hint-placeholder-count="0">
                 <path d="{{ b.d }}" fill="{{ b.fill }}" stroke="#d8ccb6" stroke-width="{{ b.sw }}"></path>
               </sc-for>
@@ -725,6 +730,7 @@ class Component extends DCLogic {
     const SI=window.SIM_INDEX; if(!SI) return;
     const rec=SI.munis.find(m=>m.n===nome)||SI.munis[0];
     if(this.state.simData && this.state.simData.cd===rec.cd) return;
+    this._simView=null;
     this.setState({simLoading:true, simSel:[], simGreedyRes:null, simHover:null});
     fetch('sim_data/mun_'+rec.cd+'.json').then(r=>r.ok?r.json():null).then(d=>{
       if(d){ this._sim=null; this._simRes=null; this._simDots=null; this._simRank=null; this.setState({simData:d, simLoading:false}); }
@@ -903,12 +909,90 @@ class Component extends DCLogic {
   simSvgXY(e){
     let svg=e.currentTarget;
     if(!svg || String(svg.tagName).toLowerCase()!=='svg'){ svg=e.target && (e.target.ownerSVGElement || (e.target.closest && e.target.closest('svg'))); }
-    if(!svg || !this._sim) return null;
-    const rect=svg.getBoundingClientRect(), vb=this._sim.vb;
+    if(!svg) return null;
+    const vbb=svg.viewBox.baseVal;
+    const vb=[vbb.x, vbb.y, vbb.width, vbb.height];
+    const rect=svg.getBoundingClientRect();
     const s=Math.min(rect.width/vb[2], rect.height/vb[3]);
     if(!(s>0)) return null;
     const ox=(rect.width-vb[2]*s)/2, oy=(rect.height-vb[3]*s)/2;
-    return [vb[0]+(e.clientX-rect.left-ox)/s, vb[1]+(e.clientY-rect.top-oy)/s];
+    return [vb[0]+(e.clientX-rect.left-ox)/s, vb[1]+(e.clientY-rect.top-oy)/s, vb[2], vb[3]];
+  }
+  simGetView(sim){ return (this._simView||sim.vb).slice(); }
+  simSetView(vb){
+    this._simView=vb;
+    const svg=document.querySelector('svg[data-r="map"]');
+    if(svg) svg.setAttribute('viewBox', vb.map(n=>n.toFixed(2)).join(' '));
+  }
+  simClampView(sim,vb){
+    const B=sim.vb;
+    const wMin=Math.max(B[2],B[3])/30;
+    let w=Math.min(Math.max(vb[2],wMin),B[2]*1.3);
+    let h=vb[3]*(w/vb[2]);
+    const hMax=B[3]*1.3;
+    if(h>hMax){ w=w*(hMax/h); h=hMax; }
+    const cx=Math.min(Math.max(vb[0]+vb[2]/2, B[0]), B[0]+B[2]);
+    const cy=Math.min(Math.max(vb[1]+vb[3]/2, B[1]), B[1]+B[3]);
+    return [cx-w/2, cy-h/2, w, h];
+  }
+  simZoomFactor(sim,f,px,py){
+    const v=this.simGetView(sim);
+    const ax=px==null? v[0]+v[2]/2 : px, ay=py==null? v[1]+v[3]/2 : py;
+    const nx=ax-(ax-v[0])/f, ny=ay-(ay-v[1])/f;
+    this.simSetView(this.simClampView(sim,[nx,ny,v[2]/f,v[3]/f]));
+    this.setState(s=>({simViewNonce:(s.simViewNonce||0)+1}));
+  }
+  simPointerDown(e,sim){
+    let svg=e.currentTarget;
+    if(!svg || String(svg.tagName).toLowerCase()!=='svg'){ svg=e.target && (e.target.ownerSVGElement || (e.target.closest && e.target.closest('svg'))); }
+    if(!svg) return;
+    if(!this._ptrs) this._ptrs=new Map();
+    this._ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(this._ptrs.size===2){
+      const pts=[...this._ptrs.values()];
+      this._pinch={vb:this.simGetView(sim), a:{x:pts[0].x,y:pts[0].y}, b:{x:pts[1].x,y:pts[1].y}, rect:svg.getBoundingClientRect()};
+      this._pan=null;
+      try{ svg.setPointerCapture(e.pointerId); }catch(err){}
+    } else if(this._ptrs.size===1 && e.pointerType==='mouse' && e.button===0){
+      this._pan={vb:this.simGetView(sim), x:e.clientX, y:e.clientY, rect:svg.getBoundingClientRect(), moved:false};
+      try{ svg.setPointerCapture(e.pointerId); }catch(err){}
+    }
+  }
+  simPointerMove(e,sim){
+    if(!this._ptrs || !this._ptrs.has(e.pointerId)) return;
+    const p=this._ptrs.get(e.pointerId); p.x=e.clientX; p.y=e.clientY;
+    if(this._pinch && this._ptrs.size>=2){
+      const pts=[...this._ptrs.values()];
+      const P=this._pinch, rect=P.rect;
+      const d0=Math.hypot(P.a.x-P.b.x, P.a.y-P.b.y)||1;
+      const d1=Math.hypot(pts[0].x-pts[1].x, pts[0].y-pts[1].y)||1;
+      const f=Math.max(0.2, Math.min(6, d1/d0));
+      const w=P.vb[2]/f, h=P.vb[3]/f;
+      const m0x=(P.a.x+P.b.x)/2, m0y=(P.a.y+P.b.y)/2;
+      const m1x=(pts[0].x+pts[1].x)/2, m1y=(pts[0].y+pts[1].y)/2;
+      const s0=Math.min(rect.width/P.vb[2], rect.height/P.vb[3]);
+      const ox0=(rect.width-P.vb[2]*s0)/2, oy0=(rect.height-P.vb[3]*s0)/2;
+      const wx=P.vb[0]+(m0x-rect.left-ox0)/s0, wy=P.vb[1]+(m0y-rect.top-oy0)/s0;
+      const s1=Math.min(rect.width/w, rect.height/h);
+      const ox1=(rect.width-w*s1)/2, oy1=(rect.height-h*s1)/2;
+      this.simSetView(this.simClampView(sim,[wx-(m1x-rect.left-ox1)/s1, wy-(m1y-rect.top-oy1)/s1, w, h]));
+      this._suppressUntil=Date.now()+400;
+      if(e.cancelable) e.preventDefault();
+    } else if(this._pan){
+      const P=this._pan;
+      const dx=e.clientX-P.x, dy=e.clientY-P.y;
+      if(Math.abs(dx)+Math.abs(dy)>4) P.moved=true;
+      if(!P.moved) return;
+      const s=Math.min(P.rect.width/P.vb[2], P.rect.height/P.vb[3]);
+      this.simSetView(this.simClampView(sim,[P.vb[0]-dx/s, P.vb[1]-dy/s, P.vb[2], P.vb[3]]));
+      this._suppressUntil=Date.now()+400;
+    }
+  }
+  simPointerUp(e,sim){
+    if(this._ptrs) this._ptrs.delete(e.pointerId);
+    if(this._ptrs && this._ptrs.size<2) this._pinch=null;
+    if(!this._ptrs || this._ptrs.size===0) this._pan=null;
+    this.setState(s=>({simViewNonce:(s.simViewNonce||0)+1}));
   }
   fmtKids(x){ return x>=99.5? Math.round(x).toLocaleString('pt-BR') : (Math.round(x*10)/10).toLocaleString('pt-BR'); }
   simVals(v){
@@ -942,7 +1026,7 @@ class Component extends DCLogic {
     // defaults (usados enquanto os dados não chegam)
     Object.assign(v,{ simThrTxt:'', simViewBox:'0 0 10 10', simBase:[], simDots0:'', simDots1:'', simDots2:'', simDots3:'',
       simFill0:'#c9c2b4', simFill1:'#3f6b4e', simFill2:'#c79a3f', simFill3:'#b14a36', simEscCand:'', simEscOferta:'',
-      simSelMarkers:[], simHoverText:'', simHoverBg:'0.45', simMapClick:()=>{}, simMapMove:()=>{}, simMapLeave:()=>{}, simMalha:'', simToggleClasses:()=>{}, simVerClassesTxt:'', simLeg4Cor:'#c9c2b4', simLeg4Txt:'Sem demanda na etapa',
+      simSelMarkers:[], simHoverText:'', simHoverBg:'0.45', simMapClick:()=>{}, simMapMove:()=>{}, simMapLeave:()=>{}, simMalha:'', simToggleClasses:()=>{}, simVerClassesTxt:'', simLeg4Cor:'#c9c2b4', simLeg4Txt:'Sem demanda na etapa', simPD:()=>{}, simPM:()=>{}, simPU:()=>{}, simWheel:()=>{}, simZoomIn:()=>{}, simZoomOut:()=>{}, simZoomReset:()=>{},
       sAntCam:'0.0', sAntTr:'0.0', sAntSem:'0.0', sAntCamN:'0', sAntTrN:'0', sAntSemN:'0',
       sDepCam:'0.0', sDepTr:'0.0', sDepSem:'0.0', sDepCamN:'0', sDepTrN:'0', sDepSemN:'0',
       sAntWCam:'0%', sAntWTr:'0%', sAntWSem:'0%', sDepWCam:'0%', sDepWTr:'0%', sDepWSem:'0%',
@@ -982,7 +1066,7 @@ class Component extends DCLogic {
     const R=this.simCompute(sim,I,T,key);
     const dots=this.simDotsBuild(sim,I,R,XU,XR,key+'|'+S.simTab+'|'+XU+'|'+XR+'|'+S.simEscopo+'|'+(S.simVerClasses?1:0));
 
-    v.simViewBox=sim.vb.map(n=>n.toFixed(2)).join(' ');
+    v.simViewBox=(this._simView||sim.vb).map(n=>n.toFixed(2)).join(' ');
     v.simBase = window.CEARA? window.CEARA.munis.map(m=>({d:m.d, fill:m.n===S.municipio?'#f6f0e5':'#e9e2d4', sw:'0.4'})) : [];
     v.simDots0=dots.dots[0]; v.simDots1=dots.dots[1]; v.simDots2=dots.dots[2]; v.simDots3=dots.dots[3];
     v.simEscCand=dots.cand; v.simEscOferta=dots.ofer;
@@ -1007,15 +1091,16 @@ class Component extends DCLogic {
     v.simSelMarkers=S.simSel.map(b=>({cx:D.quads[b][0].toFixed(2), cy:D.quads[b][1].toFixed(2), r:(dots.r*1.8).toFixed(2), sw:(dots.r*0.55).toFixed(2)}));
 
     v.simMapClick=e=>{
+      if(this._suppressUntil && Date.now()<this._suppressUntil) return;
       const pt=this.simSvgXY(e); if(!pt) return;
-      const rr=Math.max(sim.vb[2],sim.vb[3])/30; let best=-1,bd=rr*rr;
+      const rr=Math.max(pt[2],pt[3])/30; let best=-1,bd=rr*rr;
       for(let q=0;q<D.quads.length;q++){ const dx=D.quads[q][0]-pt[0],dy=D.quads[q][1]-pt[1],dd=dx*dx+dy*dy; if(dd<bd){bd=dd;best=q;} }
       if(best<0) return;
       this.setState(s=>({ simSel: s.simSel.includes(best)? s.simSel.filter(x=>x!==best) : s.simSel.concat([best]) }));
     };
     v.simMapMove=e=>{
       const pt=this.simSvgXY(e); if(!pt||!this._simRes) return;
-      const rr=Math.max(sim.vb[2],sim.vb[3])/45; let best=-1,bd=rr*rr;
+      const rr=Math.max(pt[2],pt[3])/45; let best=-1,bd=rr*rr;
       for(let q=0;q<D.quads.length;q++){ const dx=D.quads[q][0]-pt[0],dy=D.quads[q][1]-pt[1],dd=dx*dx+dy*dy; if(dd<bd){bd=dd;best=q;} }
       let txt=null;
       if(best>=0){
@@ -1033,6 +1118,13 @@ class Component extends DCLogic {
       if(cur!==txt) this.setState({simHover: txt?{txt}:null});
     };
     v.simMapLeave=()=>{ if(S.simHover) this.setState({simHover:null}); };
+    v.simPD=e=>this.simPointerDown(e,sim);
+    v.simPM=e=>this.simPointerMove(e,sim);
+    v.simPU=e=>this.simPointerUp(e,sim);
+    v.simWheel=e=>{ if(e.cancelable) e.preventDefault(); const pt=this.simSvgXY(e); if(!pt) return; this.simZoomFactor(sim, e.deltaY<0?1.25:0.8, pt[0], pt[1]); };
+    v.simZoomIn=()=>this.simZoomFactor(sim,1.5,null,null);
+    v.simZoomOut=()=>this.simZoomFactor(sim,1/1.5,null,null);
+    v.simZoomReset=()=>{ this._simView=null; const sv=document.querySelector('svg[data-r="map"]'); if(sv) sv.setAttribute('viewBox', sim.vb.map(n=>n.toFixed(2)).join(' ')); this.setState(s=>({simViewNonce:(s.simViewNonce||0)+1})); };
     v.simHoverText=S.simHover? S.simHover.txt : 'Passe o cursor sobre um ponto · clique para simular uma escola';
     v.simHoverBg=S.simHover?'0.92':'0.45';
 
